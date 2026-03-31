@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ER RX Indonesia — Critical Drug Reference v2</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b10;
+  --surface: #0f1219;
+  --surface2: #171b24;
+  --surface3: #1e2330;
+  --border: #252a38;
+  --border2: #303548;
+  --accent: #e63946;
+  --accent2: #f4a261;
+  --accent3: #2ec4b6;
+  --accent4: #6a67ce;
+  --text: #eef0f6;
+  --text-muted: #8a90a8;
+  --text-dim: #4a5068;
+  --green: #52b788;
+  --yellow: #ffd166;
+  --red: #e63946;
+  --purple: #9b72cf;
+  --blood: #c1292e;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --display: 'Bebas Neue', sans-serif;
+  --radius: 8px;
+  --sidebar-w: 240px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;}
+
+/* ====== HEADER ====== */
+.header{
+  background:var(--surface);
+  border-bottom:2px solid var(--accent);
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  position:fixed;top:0;left:0;right:0;
+  z-index:200;
+  height:54px;
+}
+.logo{font-family:var(--display);font-size:24px;letter-spacing:2px;color:var(--accent);line-height:1;flex-shrink:0;}
+.logo-sub{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;display:block;}
+.header-tag{background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:var(--accent);font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;letter-spacing:1px;flex-shrink:0;display:none;}
+.search-wrap{flex:1;position:relative;max-width:360px;margin-left:auto;}
+.search-bar{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 12px 7px 32px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;transition:border-color 0.2s;}
+.search-bar:focus{border-color:var(--accent3);}
+.search-bar::placeholder{color:var(--text-dim);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;}
+.burger{display:none;background:none;border:1px solid var(--border);color:var(--text-muted);padding:6px 9px;border-radius:6px;cursor:pointer;font-size:16px;line-height:1;flex-shrink:0;}
+
+/* ====== CAT TABS ====== */
+.cat-tabs{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 8px;
+  display:flex;
+  gap:2px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  position:fixed;top:54px;left:0;right:0;
+  z-index:190;
+  height:42px;
+  align-items:center;
+}
+.cat-tabs::-webkit-scrollbar{display:none;}
+.cat-tab{
+  padding:5px 12px;
+  border-radius:4px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.5px;
+  cursor:pointer;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text-dim);
+  transition:all 0.15s;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.cat-tab:hover{color:var(--text-muted);border-color:var(--border);}
+.cat-tab.active{color:#fff;border-color:transparent;}
+.cat-tab[data-cat="all"].active{background:var(--accent);}
+.cat-tab[data-cat="sedative"].active{background:var(--accent4);}
+.cat-tab[data-cat="analgesic"].active{background:var(--accent2);color:#1a1a1a;}
+.cat-tab[data-cat="nmd"].active{background:var(--accent3);color:#1a1a1a;}
+.cat-tab[data-cat="hemostatic"].active{background:var(--blood);}
+.cat-tab[data-cat="antidote"].active{background:var(--green);color:#1a1a1a;}
+.cat-tab[data-cat="scenario"].active{background:var(--purple);}
+.cat-tab[data-cat="calculator"].active{background:var(--yellow);color:#1a1a1a;}
+
+/* ====== LAYOUT ====== */
+.layout{
+  display:flex;
+  position:fixed;
+  top:96px;bottom:0;left:0;right:0;
+}
+
+/* ====== SIDEBAR ====== */
+.sidebar{
+  width:var(--sidebar-w);
+  min-width:var(--sidebar-w);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+  flex-shrink:0;
+  transition:transform 0.25s;
+}
+.sidebar-group-label{
+  padding:8px 14px;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:2px;
+  color:var(--text-dim);
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  border-top:1px solid var(--border);
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;
+}
+.sidebar-item{
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  cursor:pointer;
+  transition:background 0.12s;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.sidebar-item:hover{background:var(--surface2);}
+.sidebar-item.active{background:rgba(230,57,70,0.08);border-left:3px solid var(--accent);padding-left:11px;}
+.sidebar-item.active .si-name{color:var(--text);}
+.si-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dot-sed{background:var(--accent4);}
+.dot-analg{background:var(--accent2);}
+.dot-nmd{background:var(--accent3);}
+.dot-hemo{background:var(--blood);}
+.dot-anti{background:var(--green);}
+.dot-scen{background:var(--purple);}
+.si-name{font-family:var(--mono);font-size:12px;color:var(--text-muted);font-weight:500;}
+.si-class{font-size:10px;color:var(--text-dim);}
+
+/* ====== MAIN CONTENT ====== */
+.main-content{
+  flex:1;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+.content-pad{padding:20px 24px 40px;}
+
+/* ====== WELCOME ====== */
+.welcome{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;text-align:center;color:var(--text-dim);gap:12px;padding:40px;
+}
+.welcome-icon{font-size:56px;line-height:1;}
+.welcome h2{font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text-muted);}
+.welcome p{font-size:13px;max-width:380px;line-height:1.7;}
+.welcome-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-width:600px;margin-top:12px;}
+.welcome-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all 0.15s;}
+.welcome-card:hover{border-color:var(--border2);background:var(--surface2);}
+.wc-icon{font-size:22px;margin-bottom:6px;}
+.wc-label{font-family:var(--mono);font-size:11px;color:var(--text-muted);}
+.wc-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+
+/* ====== DRUG HEADER ====== */
+.drug-header{
+  display:flex;align-items:flex-start;gap:16px;
+  margin-bottom:20px;padding-bottom:18px;
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.drug-name-big{font-family:var(--display);font-size:44px;letter-spacing:3px;color:var(--text);line-height:1;}
+.drug-meta{display:flex;flex-direction:column;gap:5px;margin-top:5px;}
+.badge{display:inline-block;padding:3px 10px;border-radius:3px;font-family:var(--mono);font-size:10px;letter-spacing:0.5px;font-weight:600;}
+.badge-sed{background:rgba(106,103,206,0.18);color:var(--accent4);border:1px solid rgba(106,103,206,0.5);}
+.badge-analg{background:rgba(244,162,97,0.18);color:var(--accent2);border:1px solid rgba(244,162,97,0.5);}
+.badge-nmd{background:rgba(46,196,182,0.18);color:var(--accent3);border:1px solid rgba(46,196,182,0.5);}
+.badge-hemo{background:rgba(193,41,46,0.18);color:#f87171;border:1px solid rgba(193,41,46,0.5);}
+.badge-anti{background:rgba(82,183,136,0.18);color:var(--green);border:1px solid rgba(82,183,136,0.5);}
+.badge-route{background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);}
+.badge-avail{background:rgba(255,209,102,0.1);color:var(--yellow);border:1px solid rgba(255,209,102,0.3);}
+
+/* ====== SECTIONS ====== */
+.sections{display:grid;gap:12px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.section-header{
+  padding:10px 14px;background:var(--surface2);
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;
+  color:var(--text-muted);display:flex;align-items:center;gap:8px;
+  cursor:pointer;user-select:none;transition:background 0.15s;
+}
+.section-header:hover{background:var(--surface3);}
+.section-icon{font-size:14px;}
+.section-toggle{margin-left:auto;color:var(--text-dim);font-size:11px;transition:transform 0.2s;}
+.section.collapsed .section-toggle{transform:rotate(-90deg);}
+.section-body{padding:14px;display:block;}
+.section.collapsed .section-body{display:none;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* ====== DOSE TABLE ====== */
+.dose-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.dose-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;min-width:520px;}
+.dose-table th{background:var(--bg);padding:8px 12px;text-align:left;color:var(--text-dim);font-size:9px;letter-spacing:1.5px;border-bottom:1px solid var(--border);}
+.dose-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:top;}
+.dose-table tr:last-child td{border-bottom:none;}
+.dose-table tr:hover td{background:rgba(255,255,255,0.015);}
+.dose-val{color:var(--yellow);font-weight:600;}
+.dose-pop{color:var(--accent3);}
+.dose-note{color:var(--text-muted);font-size:10.5px;}
+
+/* ====== LISTS ====== */
+.info-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.info-list li{padding:6px 10px;border-left:2px solid var(--border);font-size:13px;color:var(--text);line-height:1.5;}
+.li-green{border-left-color:var(--green)!important;}
+.li-red{border-left-color:var(--red)!important;color:#fca5a5!important;}
+.li-yellow{border-left-color:var(--yellow)!important;}
+.li-blue{border-left-color:var(--accent3)!important;}
+.li-purple{border-left-color:var(--purple)!important;}
+
+/* ====== ALERT ====== */
+.alert{padding:11px 14px;border-radius:6px;font-size:13px;line-height:1.5;margin-bottom:10px;border-left:4px solid;}
+.alert-danger{background:rgba(230,57,70,0.09);border-color:var(--red);color:#fca5a5;}
+.alert-warn{background:rgba(255,209,102,0.07);border-color:var(--yellow);color:#fde68a;}
+.alert-info{background:rgba(46,196,182,0.07);border-color:var(--accent3);color:#99f6e4;}
+.alert-success{background:rgba(82,183,136,0.07);border-color:var(--green);color:#a7f3d0;}
+
+/* ====== MONITORING GRID ====== */
+.monitor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
+.monitor-card{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;}
+.monitor-label{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-bottom:4px;}
+.monitor-target{font-family:var(--mono);font-size:12px;color:var(--green);font-weight:600;}
+.monitor-note{font-size:11px;color:var(--text-dim);margin-top:3px;}
+
+/* ====== OVERDOSE BOX ====== */
+.overdose-box{background:rgba(230,57,70,0.05);border:1px solid rgba(230,57,70,0.25);border-radius:6px;padding:12px;margin-bottom:10px;}
+.overdose-box h4{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--red);margin-bottom:8px;}
+.antidote-box{background:rgba(82,183,136,0.08);border:1px solid rgba(82,183,136,0.35);border-radius:6px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6;}
+.antidote-box .at-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px;}
+.titrate-box{background:rgba(255,209,102,0.05);border:1px solid rgba(255,209,102,0.18);border-radius:6px;padding:12px;font-size:13px;line-height:1.7;}
+
+/* ====== SCENARIO ====== */
+.scen-title{font-family:var(--display);font-size:34px;letter-spacing:2px;color:var(--purple);line-height:1.1;}
+.step{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--mono);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-num.drug{background:var(--yellow);color:#1a1a1a;}
+.step-content{flex:1;font-size:13px;line-height:1.6;}
+
+/* ====== CALCULATOR ====== */
+.calc-wrap{max-width:680px;margin:0 auto;}
+.calc-header{font-family:var(--display);font-size:34px;letter-spacing:3px;color:var(--yellow);margin-bottom:4px;}
+.calc-sub{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:20px;}
+.calc-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
+.calc-field label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text-dim);display:block;margin-bottom:6px;}
+.calc-field input, .calc-field select{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;padding:9px 12px;color:var(--text);
+  font-family:var(--mono);font-size:13px;outline:none;transition:border-color 0.2s;
+}
+.calc-field input:focus, .calc-field select:focus{border-color:var(--accent3);}
+.calc-field select option{background:var(--surface2);}
+.calc-btn{
+  width:100%;background:var(--accent);border:none;border-radius:6px;
+  padding:11px;color:#fff;font-family:var(--mono);font-size:12px;
+  letter-spacing:1px;cursor:pointer;transition:background 0.15s;font-weight:600;
+}
+.calc-btn:hover{background:#cc2f3b;}
+.calc-results{display:grid;gap:10px;}
+.calc-drug-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.cdc-header{padding:10px 14px;background:var(--surface2);display:flex;align-items:center;gap:10px;}
+.cdc-name{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);}
+.cdc-class{font-size:11px;color:var(--text-dim);}
+.cdc-body{padding:12px 14px;display:grid;gap:6px;}
+.cdc-row{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid rgba(255,255,255,0.03);padding-bottom:6px;}
+.cdc-row:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-ind{font-size:11px;color:var(--text-muted);flex:1;}
+.cdc-dose{font-family:var(--mono);font-size:13px;color:var(--yellow);font-weight:600;white-space:nowrap;}
+.cdc-note{font-size:10px;color:var(--text-dim);}
+.cdc-warn{background:rgba(230,57,70,0.08);border-left:3px solid var(--red);padding:6px 10px;font-size:11px;color:#fca5a5;margin-top:6px;border-radius:0 4px 4px 0;}
+
+/* ====== OVERLAY for mobile ====== */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
+
+/* ====== SCROLLBAR ====== */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ====== MOBILE ====== */
+@media(max-width:700px){
+  .header{height:50px;}
+  .cat-tabs{top:50px;height:38px;padding:0 6px;}
+  .layout{top:88px;}
+  .sidebar{
+    position:fixed;top:88px;bottom:0;left:0;
+    z-index:160;transform:translateX(-100%);
+    width:260px;min-width:260px;
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay.active{display:block;}
+  .burger{display:flex;align-items:center;}
+  .logo{font-size:20px;}
+  .header-tag{display:none;}
+  .main-content{width:100%;}
+  .content-pad{padding:14px 14px 40px;}
+  .drug-name-big{font-size:32px;}
+  .two-col{grid-template-columns:1fr;}
+  .calc-inputs{grid-template-columns:1fr 1fr;}
+  .welcome-grid{grid-template-columns:repeat(2,1fr);}
+  .search-wrap{max-width:none;}
+}
+@media(min-width:701px){
+  .header-tag{display:inline-block;}
+}
+
+.hidden{display:none!important;}
+strong{font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <button class="burger" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+  <div class="logo">ER RX <span class="logo-sub">INDONESIA · CRITICAL DRUG REF v2</span></div>
+  <span class="header-tag">⚕ FOR LICENSED PHYSICIANS ONLY</span>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-bar" id="searchInput" type="text" placeholder="Search drug, class..." oninput="renderSidebar()">
+  </div>
+</div>
+
+<!-- CAT TABS -->
+<div class="cat-tabs" id="catTabs"></div>
+
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="main-content" id="mainContent">
+    <div id="welcomePanel" class="content-pad" style="height:100%;display:flex;flex-direction:column;justify-content:center;"></div>
+    <div id="drugPanel" class="content-pad hidden"></div>
+    <div id="scenarioPanel" class="content-pad hidden"></div>
+    <div id="calcPanel" class="content-pad hidden"></div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// DATA
+// ================================================================
+const DRUGS = [
+// ─── SEDATIVES ───────────────────────────────────────────────────
+{
+  id:'midazolam', name:'Midazolam', cat:'sedative', class:'Benzodiazepine',
+  routes:['IV','IM','IN','PO','PR'], avail:'Widely available — generic',
+  mech:'Enhances GABA-A receptor activity → CNS depression, anxiolysis, amnesia, muscle relaxation. Onset IV 1–3 min, IM 5–15 min.',
+  indications:['Procedural sedation (laceration, joint reduction, cardioversion)','RSI pre-medication / post-intubation sedation','Status epilepticus (2nd line after diazepam)','Agitated patient sedation','Alcohol withdrawal'],
+  contraindications:['Known hypersensitivity','Acute narrow-angle glaucoma','Severe unprotected respiratory depression (relative)','Pregnancy Category D','Neonates: avoid IM (benzyl alcohol preservative)'],
+  pearls:['✅ Excellent amnesia — patients forget painful procedures','✅ IN 0.2 mg/kg great for paeds — no IV needed','✅ Synergistic with ketamine — reduces doses of both','⚠ Onset slower than expected — titrate slowly, especially elderly','⚠ Potentiates opioids — apnea risk with combo; BVM at bedside always','⚠ Paradoxical agitation in children and elderly (uncommon)'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Procedural sedation',dose:'1–2.5 mg IV',titrate:'q2–3 min prn, max ~5 mg',note:'Give slowly >2 min'},
+    {pop:'Adult 60–70 kg',ind:'Agitation / IM sedation',dose:'5–10 mg IM',titrate:'q15–20 min prn',note:'IM for combative pt'},
+    {pop:'Adult 60–70 kg',ind:'Seizure',dose:'2.5–5 mg IV/IM/IN',titrate:'Repeat once in 5 min',note:''},
+    {pop:'Elderly >65yr',ind:'Any',dose:'HALF: 0.5–1 mg IV',titrate:'Very cautiously q3–5 min',note:'Highly sensitive'},
+    {pop:'Peds 5yr (20 kg)',ind:'Procedural sedation',dose:'0.1 mg/kg IV = 2 mg; 0.2 mg/kg IN = 4 mg',titrate:'Repeat 0.05 mg/kg q5 min',note:'IN preferred if no IV'},
+    {pop:'Peds 10yr (30 kg)',ind:'Procedural sedation',dose:'0.1 mg/kg IV = 3 mg',titrate:'May repeat once',note:''},
+    {pop:'Adolescent 15yr (50 kg)',ind:'Procedural sedation',dose:'0.05–0.1 mg/kg IV = 2.5–5 mg',titrate:'q2–3 min, max 10 mg',note:''},
+    {pop:'Neonate/Infant',ind:'Seizure (IN only)',dose:'0.2 mg/kg IN',titrate:'Single dose — reassess',note:'Avoid IM neonates'},
+  ],
+  monitoring:[{l:'SpO2',t:'≥94%',n:'Apnea risk'},{l:'RR',t:'12–20/min',n:'Key vital'},{l:'BP',t:'Baseline ±20%',n:'Mild hypotension possible'},{l:'AVPU/RASS',t:'Target sedation depth',n:'Use RASS or Ramsay'}],
+  overdose:{signs:['Respiratory depression/apnea','Deep unresponsive sedation','Hypotension'],mgmt:['STOP drug','Airway — jaw thrust, NPA, BVM','High-flow O2','Lateral position','IV fluids if hypotensive'],antidote:'FLUMAZENIL 0.2 mg IV over 30 sec. Repeat 0.1 mg q1 min. Max 1 mg. ⚠ Short-acting — re-sedation expected. Do NOT use in benzo-dependent patients (seizure risk).'},
+  titrate:'Target Ramsay 3–4 for procedures (responds to commands). Ramsay 4–5 post-intubation. Re-dose when patient opens eyes or moves purposefully.',
+  calcDoses:[
+    {ind:'Procedural sedation IV',formula:(w)=>({low:+(w*0.05).toFixed(1),high:+(w*0.1).toFixed(1),unit:'mg IV',note:'Max 5 mg; give slowly'}),flag:null},
+    {ind:'IN sedation (peds)',formula:(w)=>({low:+(w*0.2).toFixed(1),high:+(w*0.3).toFixed(1),unit:'mg IN',note:'Split between nostrils'}),flag:null},
+    {ind:'Seizure / Status',formula:(w)=>({low:+(w*0.05).toFixed(1),high:+(w*0.1).toFixed(1),unit:'mg IV/IM/IN',note:'Max 10 mg'}),flag:null},
+  ]
+},
+{
+  id:'diazepam', name:'Diazepam', cat:'sedative', class:'Benzodiazepine',
+  routes:['IV','PR','PO'], avail:'Very widely available — cheap, generic',
+  mech:'Enhances GABA-A → sedation, anxiolysis, anticonvulsant, muscle relaxation. Longer duration (t½ 20–100hr) + active metabolites.',
+  indications:['Status epilepticus — FIRST LINE in Indonesia','Alcohol withdrawal seizures / agitation','Muscle spasm (tetanus, stiff-person syndrome)','Febrile seizure prophylaxis (PR)'],
+  contraindications:['Severe liver impairment (accumulation)','Respiratory failure without airway support','Myasthenia gravis','Sleep apnea (relative)'],
+  pearls:['✅ FIRST LINE for status epilepticus in Indonesian ER settings','✅ PR route works in seizing child — no IV needed','⚠ IM absorption ERRATIC — avoid IM if possible','⚠ Long half-life: prolonged sedation, accumulation with repeated doses','⚠ IV can cause thrombophlebitis — dilute, give slowly in large vein','⚠ Stacking in status epilepticus risks severe respiratory depression'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Status epilepticus',dose:'10 mg IV (2 mg/min)',titrate:'Repeat 10 mg in 5 min; total 20 mg',note:'Then escalate to phenytoin'},
+    {pop:'Adult 60–70 kg',ind:'Alcohol withdrawal/agitation',dose:'5–10 mg IV/PO',titrate:'q1–2h (CIWA protocol)',note:''},
+    {pop:'Adult 60–70 kg',ind:'Muscle spasm',dose:'5–10 mg IV/PO TID',titrate:'Clinical response',note:''},
+    {pop:'Elderly',ind:'Seizure',dose:'5 mg IV SLOW (HALF dose)',titrate:'Once, great caution',note:'Major respiratory risk'},
+    {pop:'Peds 5yr (20 kg)',ind:'Status epilepticus',dose:'0.3 mg/kg IV = 6 mg; PR 0.5 mg/kg = 10 mg',titrate:'Repeat once in 5 min',note:'PR if no IV'},
+    {pop:'Peds 10yr (30 kg)',ind:'Status epilepticus',dose:'0.3 mg/kg IV = 9 mg',titrate:'Repeat once',note:''},
+    {pop:'Neonate',ind:'Seizure',dose:'0.1–0.3 mg/kg IV SLOW',titrate:'Single dose',note:'Respiratory support ready'},
+  ],
+  monitoring:[{l:'SpO2',t:'≥94%',n:'Critical'},{l:'RR',t:'>10/min',n:''},{l:'Seizure activity',t:'None',n:'Monitor 30 min post'},{l:'BP',t:'Baseline ±20%',n:''}],
+  overdose:{signs:['Respiratory depression','Deep sedation/coma','Hypotension'],mgmt:['Airway — BVM, intubate','O2, IV fluids','Lateral position'],antidote:'FLUMAZENIL — same as midazolam. Same caveats.'},
+  titrate:'Status epilepticus: give full dose ×2 before escalating to phenytoin/phenobarb. Alcohol withdrawal: re-dose when CIWA score >8.',
+  calcDoses:[
+    {ind:'Status epilepticus IV',formula:(w)=>({low:+(w*0.3).toFixed(1),high:+(w*0.3).toFixed(1),unit:'mg IV',note:'Max 10 mg adult; give 2 mg/min'}),flag:null},
+    {ind:'PR (febrile seizure / no IV)',formula:(w)=>({low:+(w*0.5).toFixed(1),high:+(w*0.5).toFixed(1),unit:'mg PR',note:'Max 20 mg'}),flag:null},
+  ]
+},
+{
+  id:'ketamine', name:'Ketamine', cat:'sedative', class:'Dissociative — NMDA Antagonist',
+  routes:['IV','IM','IN','PO'], avail:'Available in Indonesia (controlled)',
+  mech:'NMDA receptor antagonist → dissociative state. PRESERVES airway reflexes and respiratory drive. Bronchodilator. Releases endogenous catecholamines (↑BP, ↑HR).',
+  indications:['Procedural sedation (analgesia + sedation simultaneously)','RSI induction — especially hemodynamically unstable','Severe agitation / excited delirium (IM before IV access)','Acute severe asthma (refractory bronchospasm)','Sub-dissociative analgesia (0.1–0.3 mg/kg IV)','Burn dressing changes'],
+  contraindications:['Age <3 months (laryngospasm risk)','Severe/uncontrolled hypertension (relative)','Active psychosis/schizophrenia (relative)','Thyroid storm / hyperthyroidism (catecholamine release)','Elevated ICP — use cautiously (historical concern, current evidence less concerning)'],
+  pearls:['✅ KING of procedural sedation — preserves airway, dual analgesia+sedation','✅ Hemodynamically SAFE in hypotensive trauma — raises BP','✅ Excellent bronchodilator — use in severe asthma','✅ Sub-dissociative (0.1–0.3 mg/kg IV) = powerful analgesia without full dissociation','⚠ Emergence reactions — pre-treat midazolam 0.05 mg/kg IV to reduce','⚠ Increases secretions — suction ready, consider glycopyrrolate 0.2 mg IV','⚠ Laryngospasm RARE — inject SLOWLY IV over 60 sec','⚠ Nystagmus = sign of adequate dissociation depth'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Procedural sedation IV',dose:'1–2 mg/kg IV = 65–130 mg',titrate:'Repeat 0.5 mg/kg q5–10 min',note:'Give over 60 sec'},
+    {pop:'Adult 60–70 kg',ind:'Sub-dissociative analgesia',dose:'0.1–0.3 mg/kg IV = 7–20 mg',titrate:'Repeat q20–30 min prn',note:'Patient stays conscious'},
+    {pop:'Adult 60–70 kg',ind:'RSI induction',dose:'1.5–2 mg/kg IV = 100–130 mg',titrate:'Single bolus',note:'Follow with paralytic'},
+    {pop:'Adult 60–70 kg',ind:'Agitation IM (no IV)',dose:'4–6 mg/kg IM = 260–400 mg',titrate:'Usually single dose',note:'Fastest control'},
+    {pop:'Adult 60–70 kg',ind:'Severe asthma',dose:'0.5–1 mg/kg IV = 35–65 mg',titrate:'Then 0.15–0.5 mg/kg/hr infusion',note:''},
+    {pop:'Elderly',ind:'Procedural sedation',dose:'0.5–1 mg/kg IV = 30–65 mg',titrate:'Cautiously',note:'Reduced clearance'},
+    {pop:'Peds 5yr (20 kg)',ind:'Procedural sedation',dose:'1–2 mg/kg IV = 20–40 mg; IM 4–5 mg/kg = 80–100 mg',titrate:'0.5 mg/kg q5 min prn IV',note:'IM excellent in peds'},
+    {pop:'Peds 10yr (30 kg)',ind:'Procedural sedation',dose:'1.5 mg/kg IV = 45 mg; IM 4 mg/kg = 120 mg',titrate:'Repeat 0.5 mg/kg prn',note:''},
+    {pop:'Adolescent 15yr (50 kg)',ind:'Procedural sedation',dose:'1–2 mg/kg IV = 50–100 mg',titrate:'Adult protocol',note:''},
+  ],
+  monitoring:[{l:'SpO2',t:'≥94%',n:'Usually maintained'},{l:'Airway patency',t:'Watch for laryngospasm',n:'Rare but critical'},{l:'BP / HR',t:'Expect ↑10–20%',n:'Problem if hypertensive'},{l:'Secretions',t:'Have suction ready',n:''},{l:'Emergence',t:'Quiet environment post-procedure',n:'Dim lights, minimal stimuli'},{l:'Nystagmus',t:'Sign of adequate depth',n:''}],
+  overdose:{signs:['Airway obstruction (repositionable)','Laryngospasm (rare)','Prolonged emergence','Hypertensive crisis (very high dose)'],mgmt:['Laryngospasm: jaw thrust, BVM, CPAP; if persistent → succinylcholine 0.1–0.2 mg/kg IV','Emergence: quiet room, midazolam 1–2 mg IV','Hypertension: labetalol or nitroglycerin'],antidote:'NO specific antidote. SUPPORTIVE. Emergence reactions → midazolam 1–2 mg IV.'},
+  titrate:'Procedural: re-dose 0.5 mg/kg IV q5–10 min to maintain dissociation. Sub-dissociative analgesia: reassess pain NRS q20 min. NEVER push IV dose faster than 60 sec.',
+  calcDoses:[
+    {ind:'Procedural sedation IV',formula:(w)=>({low:+(w*1).toFixed(0),high:+(w*2).toFixed(0),unit:'mg IV',note:'Give over 60 sec'}),flag:null},
+    {ind:'Sub-dissociative analgesia',formula:(w)=>({low:+(w*0.1).toFixed(1),high:+(w*0.3).toFixed(1),unit:'mg IV',note:'Give over 15 min'}),flag:null},
+    {ind:'RSI induction',formula:(w)=>({low:+(w*1.5).toFixed(0),high:+(w*2).toFixed(0),unit:'mg IV',note:'Single bolus'}),flag:null},
+    {ind:'Agitation IM (no IV)',formula:(w)=>({low:+(w*4).toFixed(0),high:+(w*6).toFixed(0),unit:'mg IM',note:'Single dose'}),flag:null},
+  ]
+},
+{
+  id:'propofol', name:'Propofol', cat:'sedative', class:'Alkylphenol / GABA Modulator',
+  routes:['IV only'], avail:'Available in larger Indonesian hospitals',
+  mech:'Potentiates GABA-A, inhibits NMDA. Rapid onset 30 sec. Rapid offset 5–10 min (redistribution). No analgesic properties.',
+  indications:['Procedural sedation (cardioversion, endoscopy)','RSI induction (hemodynamically stable)','ICU post-intubation sedation infusion','Refractory status epilepticus'],
+  contraindications:['Egg/soy allergy (lipid emulsion) — RELATIVE','Hemodynamic instability/hypovolemia','Children <3yr for ICU infusion (PRIS risk)','No airway secured for deep sedation'],
+  pearls:['✅ Rapid onset AND offset — ideal for brief procedures','✅ Antiemetic properties — patients wake feeling well','⚠ SIGNIFICANT HYPOTENSION — pre-bolus IV fluids, vasopressor ready','⚠ Pain on injection — lidocaine 20–40 mg IV 30 sec prior helps','⚠ NO analgesic effect — always combine with fentanyl or ketamine','⚠ Propofol Infusion Syndrome (PRIS) — high dose >5 mg/kg/hr >48hr','⚠ Sterile handling — lipid base, infection risk if open >12hr'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Procedural sedation',dose:'0.5–1 mg/kg IV = 35–70 mg',titrate:'0.25–0.5 mg/kg q3 min prn',note:'Give 20–40 mg q10 sec'},
+    {pop:'Adult 60–70 kg',ind:'RSI induction',dose:'1.5–2.5 mg/kg IV = 100–175 mg',titrate:'Single bolus',note:'Reduce 30–50% if sick/elderly'},
+    {pop:'Adult 60–70 kg',ind:'ICU sedation infusion',dose:'5–50 mcg/kg/min = 18–210 mg/hr',titrate:'Titrate to RASS target',note:'Prefer ≤4 mg/kg/hr long-term'},
+    {pop:'Elderly / Sick',ind:'Any',dose:'0.25–0.5 mg/kg IV = 15–35 mg',titrate:'Very cautiously',note:'Hypotension major risk'},
+    {pop:'Peds 5–12yr',ind:'Procedural sedation',dose:'2.5 mg/kg IV = 50 mg (5yr/20kg)',titrate:'Higher mg/kg than adults',note:'NOT for ICU infusion <3yr'},
+  ],
+  monitoring:[{l:'BP',t:'SBP >90 mmHg',n:'Most critical'},{l:'SpO2',t:'≥94%',n:'Apnea with rapid injection'},{l:'HR',t:'Baseline',n:'May decrease'},{l:'Injection site',t:'Use antecubital vein',n:'Pain, thrombophlebitis'},{l:'Triglycerides',t:'<500 mg/dL (long infusion)',n:'Lipid load'}],
+  overdose:{signs:['Apnea/respiratory arrest','Severe hypotension','Bradycardia','Loss of airway reflexes'],mgmt:['Airway first — BVM, intubate','Vasopressor: ephedrine 5–10 mg IV or norepinephrine infusion','IV fluid bolus 500 mL NS','Atropine 0.5 mg IV for bradycardia'],antidote:'NO antidote. Supportive care only.'},
+  titrate:'Titrate by eyelash reflex, response to voice. ICU: use RASS score — target RASS -2 to -3.',
+  calcDoses:[
+    {ind:'Procedural sedation',formula:(w)=>({low:+(w*0.5).toFixed(0),high:+(w*1).toFixed(0),unit:'mg IV',note:'Titrate slowly'}),flag:null},
+    {ind:'RSI induction',formula:(w)=>({low:+(w*1.5).toFixed(0),high:+(w*2.5).toFixed(0),unit:'mg IV',note:'Reduce 50% if unstable'}),flag:(w,age)=>age&&age>65?'⚠ Elderly: reduce dose by 50%':null},
+  ]
+},
+{
+  id:'etomidate', name:'Etomidate', cat:'sedative', class:'Imidazole — GABA Modulator',
+  routes:['IV only'], avail:'Available in Indonesia (less common than propofol)',
+  mech:'Potentiates GABA-A receptors. Minimal cardiovascular depression — does NOT release histamine or affect sympathetic tone. Onset 30–60 sec, duration 3–8 min.',
+  indications:['RSI induction — FIRST CHOICE when hemodynamic stability critical (hypotension, shock, cardiac compromise)','Procedural sedation (cardioversion, brief procedures)','Head injury RSI (maintains CPP)'],
+  contraindications:['Known hypersensitivity','RELATIVE: Adrenal insufficiency (single dose causes transient cortisol suppression ~12–24hr — likely clinically insignificant for one-time use)','Septic shock requiring ongoing adrenal function (avoid repeated dosing)'],
+  pearls:['✅ GOLD STANDARD for RSI in hemodynamically unstable — maintains MAP better than propofol/barbiturates','✅ Minimal cardiovascular depression — ideal in cardiac tamponade, cardiogenic shock, severe hypovolemia','✅ Does NOT raise ICP — safe for head injury RSI','✅ No histamine release','⚠ PAIN on injection — lidocaine 40 mg IV beforehand helps','⚠ MYOCLONUS in 10–40% — not seizure activity, expected, brief','⚠ ADRENAL SUPPRESSION: single induction dose suppresses cortisol 12–24hr — avoid repeated doses in sepsis','⚠ No analgesic effect — combine with fentanyl 3 mcg/kg for intubation response'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'RSI induction',dose:'0.3 mg/kg IV = 18–21 mg',titrate:'Single bolus',note:'Intubate at 60 sec; follow with paralytic'},
+    {pop:'Adult 60–70 kg — SHOCK',ind:'RSI induction',dose:'0.2–0.3 mg/kg IV = 13–21 mg',titrate:'Single bolus',note:'PREFERRED over propofol in shock'},
+    {pop:'Adult 60–70 kg',ind:'Cardioversion sedation',dose:'0.1–0.2 mg/kg IV = 7–14 mg',titrate:'Single; may repeat once',note:'Brief sedation ~5 min'},
+    {pop:'Elderly',ind:'RSI',dose:'0.2 mg/kg IV = reduce dose',titrate:'Single',note:'More sensitive'},
+    {pop:'Peds 5yr (20 kg)',ind:'RSI induction',dose:'0.3 mg/kg IV = 6 mg',titrate:'Single bolus',note:'Same mg/kg as adults'},
+    {pop:'Peds 10yr (30 kg)',ind:'RSI induction',dose:'0.3 mg/kg IV = 9 mg',titrate:'Single',note:''},
+    {pop:'Adolescent 15yr (50 kg)',ind:'RSI',dose:'0.3 mg/kg IV = 15 mg',titrate:'Single',note:''},
+  ],
+  monitoring:[{l:'BP / MAP',t:'MAP >65 mmHg',n:'Key advantage of etomidate'},{l:'SpO2',t:'≥94%',n:''},{l:'Myoclonus',t:'Expected — benign',n:'Brief, self-limiting'},{l:'Cortisol (ICU)',t:'If repeated doses: check cortisol',n:'Consider hydrocortisone coverage'}],
+  overdose:{signs:['Prolonged sedation (uncommon)','Respiratory depression','Myoclonus (expected at therapeutic dose)'],mgmt:['Supportive — airway and ventilation','Myoclonus: self-resolves; benzodiazepine if persistent'],antidote:'NO specific antidote.'},
+  titrate:'Fixed single-dose for RSI — NOT titrated. For procedural sedation repeat: 0.1 mg/kg if needed after 3–5 min.',
+  calcDoses:[
+    {ind:'RSI induction',formula:(w)=>({low:+(w*0.3).toFixed(1),high:+(w*0.3).toFixed(1),unit:'mg IV',note:'Single bolus; intubate at 60 sec'}),flag:null},
+    {ind:'RSI (hemodynamic compromise)',formula:(w)=>({low:+(w*0.2).toFixed(1),high:+(w*0.3).toFixed(1),unit:'mg IV',note:'PREFERRED in shock/hypotension'}),flag:null},
+    {ind:'Procedural sedation',formula:(w)=>({low:+(w*0.1).toFixed(1),high:+(w*0.2).toFixed(1),unit:'mg IV',note:'Brief sedation ~5 min'}),flag:null},
+  ]
+},
+// ─── ANALGESICS ──────────────────────────────────────────────────
+{
+  id:'morphine', name:'Morphine', cat:'analgesic', class:'Opioid — μ-agonist',
+  routes:['IV','IM','SC','PO','PR'], avail:'Available in Indonesia (controlled narcotic)',
+  mech:'Binds μ-opioid receptors → analgesia, euphoria, respiratory depression, ↓GI motility. Onset IV: 5–10 min. Peak: 20 min.',
+  indications:['Severe acute pain (fractures, burns, MI)','Acute pulmonary edema (vasodilation + analgesia)','Post-operative pain','Palliative care'],
+  contraindications:['Respiratory depression / severe asthma (relative)','Hypotension/hypovolemia (vasodilator effect)','Head injury with altered consciousness (relative — obscures exam)','MAOI within 14 days','Bowel obstruction/ileus'],
+  pearls:['✅ Gold standard for severe pain — TREAT PAIN, oligoanalgesia worsens outcomes','✅ Excellent in acute pulmonary edema — reduces preload + anxiety','⚠ Histamine release → pruritus, flushing, occasionally hypotension','⚠ Nausea common — have ondansetron or metoclopramide ready','⚠ Onset IV 5–10 min, peak 20 min — plan before re-dosing','⚠ Elderly: reduce dose 25–50%, slower titration'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Severe pain IV',dose:'2–4 mg IV',titrate:'q5–10 min until NRS ≤4; max ~10–15 mg',note:'Give slowly over 3–5 min'},
+    {pop:'Adult 60–70 kg',ind:'Severe pain IM/SC',dose:'5–10 mg IM/SC',titrate:'q3–4h prn',note:'Onset 15–30 min'},
+    {pop:'Adult 60–70 kg',ind:'Pulmonary edema',dose:'2–4 mg IV slow',titrate:'Once, cautiously',note:'Monitor BP'},
+    {pop:'Elderly',ind:'Severe pain',dose:'1–2 mg IV',titrate:'q5–10 min cautiously',note:'Half dose, slower titration'},
+    {pop:'Peds 5yr (20 kg)',ind:'Severe pain',dose:'0.05–0.1 mg/kg IV = 1–2 mg',titrate:'q5 min prn IV',note:''},
+    {pop:'Peds 10yr (30 kg)',ind:'Severe pain',dose:'0.05–0.1 mg/kg IV = 1.5–3 mg',titrate:'q5 min IV',note:''},
+    {pop:'Adolescent (50 kg)',ind:'Severe pain',dose:'2–4 mg IV',titrate:'q5–10 min prn',note:''},
+  ],
+  monitoring:[{l:'Pain NRS',t:'≤4/10',n:'Reassess q15–30 min'},{l:'SpO2',t:'≥94%',n:'Critical'},{l:'RR',t:'>10/min',n:'Hold if <10'},{l:'BP',t:'SBP >90',n:'Histamine+vasodilation'},{l:'AVPU',t:'Appropriate',n:''},{l:'Nausea',t:'Treat prophylactically',n:''}],
+  overdose:{signs:['TRIAD: Miosis + Respiratory Depression + Coma','RR <10/cyanosis','Hypotension','Pulmonary edema (massive OD)'],mgmt:['NALOXONE IMMEDIATELY','BVM/intubate if apneic','IV access + fluids','Continuous monitoring'],antidote:'NALOXONE 0.4–2 mg IV/IM/SC/IN. Repeat q2–3 min. Max 10 mg. SHORT ACTING (30–90 min) — monitor for re-narcotization. INFUSION: 2/3 of reversal dose per hour IV. Titrate to RR — do NOT fully reverse (pain crisis, pulmonary edema).'},
+  titrate:'Give 2–4 mg IV → wait 5 min → reassess NRS. Re-dose until NRS ≤4 or RR <10/SpO2 drops. If RR <10 or SpO2 falling — HOLD and consider naloxone.',
+  calcDoses:[
+    {ind:'Severe pain IV',formula:(w)=>({low:+(w*0.05).toFixed(1),high:+(w*0.1).toFixed(1),unit:'mg IV',note:'Titrate q5 min; max ~0.2 mg/kg'}),flag:(w,age)=>age&&age>65?'⚠ Elderly: start 0.03 mg/kg, titrate cautiously':null},
+    {ind:'IM/SC',formula:(w)=>({low:+(w*0.1).toFixed(1),high:+(w*0.15).toFixed(1),unit:'mg IM/SC',note:'q3–4h prn; max 10 mg/dose'}),flag:null},
+  ]
+},
+{
+  id:'fentanyl', name:'Fentanyl', cat:'analgesic', class:'Synthetic Opioid — μ-agonist',
+  routes:['IV','IM','IN','Buccal/SL'], avail:'Available in Indonesia (controlled)',
+  mech:'Potent μ-opioid agonist — 100× more potent than morphine. Rapid onset IV 1–2 min. Duration 30–60 min. Minimal histamine release.',
+  indications:['Procedural analgesia / sedation adjunct','RSI adjunct — blunts intubation response','Severe acute pain (faster onset than morphine)','Post-intubation analgesia infusion'],
+  contraindications:['MAOI within 14 days','Respiratory depression (relative)','Rapid IV push risks chest wall rigidity'],
+  pearls:['✅ Faster onset than morphine — ideal for procedural/acute pain','✅ Minimal histamine — safer in hemodynamic instability','✅ IN route (1.5 mcg/kg) excellent for peds fractures — no IV needed','⚠ CHEST WALL RIGIDITY ("wooden chest") with rapid high-dose IV push — give slowly over 3–5 min','⚠ Short duration 30–60 min — plan follow-up analgesia','⚠ POTENCY: 1 mcg fentanyl ≈ 0.1 mg morphine — dosing errors are dangerous'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Acute pain IV',dose:'0.5–1.5 mcg/kg IV = 30–100 mcg',titrate:'25–50 mcg q5 min until NRS ≤4',note:'Give over 3–5 min'},
+    {pop:'Adult 60–70 kg',ind:'RSI adjunct',dose:'3 mcg/kg IV = 180–200 mcg',titrate:'Single, 3 min before laryngoscopy',note:'Blunts ICP spike'},
+    {pop:'Adult 60–70 kg',ind:'IN (intranasal)',dose:'1–2 mcg/kg IN = 65–130 mcg',titrate:'Repeat 0.5 mcg/kg in 15 min',note:'Use MAD atomizer'},
+    {pop:'Adult 60–70 kg',ind:'Post-intubation infusion',dose:'25–100 mcg/hr IV',titrate:'Titrate to CPOT/pain signs',note:''},
+    {pop:'Elderly',ind:'Acute pain',dose:'0.5 mcg/kg IV = 25–30 mcg',titrate:'Cautiously, half dose',note:''},
+    {pop:'Peds 5yr (20 kg)',ind:'Acute pain IV',dose:'1–2 mcg/kg IV = 20–40 mcg; IN 1.5 mcg/kg = 30 mcg',titrate:'q5 min prn 0.5 mcg/kg',note:'IN excellent for fractures'},
+    {pop:'Peds 10yr (30 kg)',ind:'Acute pain',dose:'1 mcg/kg IV = 30 mcg; IN = 45 mcg',titrate:'q5 min prn',note:''},
+    {pop:'Adolescent (50 kg)',ind:'Acute pain',dose:'1 mcg/kg IV = 50 mcg',titrate:'Adult protocol',note:''},
+  ],
+  monitoring:[{l:'SpO2',t:'≥94%',n:''},{l:'RR',t:'>10/min',n:'Fentanyl can cause apnea'},{l:'Pain NRS',t:'≤4/10',n:'q5 min during titration'},{l:'Chest wall rigidity',t:'Observe — difficulty bagging',n:'Rapid IV push risk'},{l:'BP',t:'Stable',n:'Less vasodilation than morphine'}],
+  overdose:{signs:['Respiratory depression/apnea (very fast IV)','Miosis','Coma','Chest wall rigidity (high dose)'],mgmt:['Naloxone IMMEDIATELY','BVM if apneic','Rigid chest → succinylcholine 1 mg/kg IV','Chest compressions if pulseless'],antidote:'NALOXONE 0.4–2 mg IV. Monitor 30–60 min post-dose.'},
+  titrate:'Every 5 min: give 25–50 mcg aliquots. Reassess NRS and RR. Stop at NRS ≤4 or if RR drops. Infusion: start 25 mcg/hr, ↑ by 25 mcg/hr q30 min.',
+  calcDoses:[
+    {ind:'Acute pain IV',formula:(w)=>({low:+(w*0.5).toFixed(0),high:+(w*1.5).toFixed(0),unit:'mcg IV',note:'Titrate 25–50 mcg q5 min'}),flag:null},
+    {ind:'RSI adjunct',formula:(w)=>({low:+(w*3).toFixed(0),high:+(w*3).toFixed(0),unit:'mcg IV',note:'3 min before laryngoscopy'}),flag:null},
+    {ind:'Intranasal (IN)',formula:(w)=>({low:+(w*1).toFixed(0),high:+(w*1.5).toFixed(0),unit:'mcg IN',note:'Split per nostril; use atomizer'}),flag:null},
+  ]
+},
+{
+  id:'ketorolac', name:'Ketorolac', cat:'analgesic', class:'NSAID — Non-selective COX inhibitor',
+  routes:['IV','IM','PO'], avail:'Widely available (Toradol brand + generic)',
+  mech:'Inhibits COX-1 and COX-2 → ↓prostaglandin synthesis → analgesia, anti-inflammatory, antipyretic. No CNS depression.',
+  indications:['Moderate-severe pain (opioid-sparing)','Renal colic — FIRST-LINE','Musculoskeletal pain, fractures (adjunct)','Migraine headache IV/IM','Post-operative pain'],
+  contraindications:['Active peptic ulcer/GI bleeding','Renal impairment (Cr >2× normal)','NSAID hypersensitivity/aspirin-exacerbated respiratory disease','Pregnancy ≥30 weeks','Active bleeding/coagulopathy','Dehydration/hypovolemia','MAX 5 consecutive days'],
+  pearls:['✅ OPIOID-SPARING — reduces opioid requirements 30–40%','✅ Excellent for renal colic — comparable to opioids for ureteral spasm','✅ No respiratory depression — safe in spontaneously breathing patients','⚠ NEVER >5 days — GI and renal toxicity accumulates','⚠ AVOID in elderly >65yr, renal insufficiency, dehydrated patients','⚠ NOT for post-tonsillectomy in children (bleeding risk)'],
+  doses:[
+    {pop:'Adult <65yr (60–70 kg)',ind:'Moderate-severe pain IV',dose:'15–30 mg IV over 15 min',titrate:'q6h; max 120 mg/day, 5 days',note:''},
+    {pop:'Adult <65yr',ind:'Renal colic',dose:'30 mg IV or IM',titrate:'Can repeat in 6h',note:'Often sufficient alone'},
+    {pop:'Adult <65yr',ind:'IM',dose:'30–60 mg IM (single)',titrate:'Max 120 mg/day combined',note:'Onset 30–45 min IM'},
+    {pop:'Elderly >65yr / Low weight',ind:'Any',dose:'MAX 15 mg IV / 30 mg IM',titrate:'q6h, strict 5-day limit',note:'HIGH renal toxicity risk'},
+    {pop:'Peds ≥2yr',ind:'Pain',dose:'0.5 mg/kg IV max 15 mg; 1 mg/kg IM max 30 mg',titrate:'q6h, max 5 days',note:'NOT for <2yr'},
+  ],
+  monitoring:[{l:'Pain NRS',t:'≤4',n:''},{l:'Renal function',t:'Urine output, Cr (prolonged)',n:''},{l:'GI symptoms',t:'Epigastric pain, hematemesis',n:''},{l:'Bleeding',t:'Any unusual bleeding',n:''}],
+  overdose:{signs:['GI bleeding','Acute kidney injury','Seizures (massive OD)'],mgmt:['Stop drug','IV fluids for renal protection','PPI for GI bleeding','GI consult if significant bleeding'],antidote:'NO antidote. Supportive care.'},
+  titrate:'Fixed dosing — not titrated like opioids. Give full dose, wait 30–45 min. Combine with opioid if still insufficient.',
+  calcDoses:[
+    {ind:'Moderate-severe pain IV (adult <65yr)',formula:(w)=>({low:15,high:30,unit:'mg IV',note:'Max 120 mg/day; max 5 days'}),flag:(w,age)=>age&&age>65?'⚠ Elderly: MAX 15 mg IV per dose':null},
+    {ind:'Peds ≥2yr IV',formula:(w)=>({low:+(w*0.5).toFixed(1),high:+(w*0.5).toFixed(1),unit:'mg IV',note:'Max 15 mg per dose'}),flag:null},
+  ]
+},
+{
+  id:'tramadol', name:'Tramadol', cat:'analgesic', class:'Weak Opioid + SNRI',
+  routes:['IV','IM','PO'], avail:'Very widely available in Indonesia — common, generic, cheap',
+  mech:'Dual mechanism: (1) weak μ-opioid agonist; (2) inhibits reuptake of serotonin and norepinephrine. Less respiratory depression than morphine. Metabolized to active metabolite (O-desmethyltramadol) via CYP2D6.',
+  indications:['Moderate pain (NRS 4–6) — not requiring strong opioids','Post-operative pain (IV or PO)','Chronic moderate pain','Adjunct in multimodal analgesia','Neuropathic pain component (SNRI effect)'],
+  contraindications:['MAOI use within 14 days (SEROTONIN SYNDROME — ABSOLUTE)','Severe renal/hepatic impairment (accumulation)','History of seizures (lowers seizure threshold)','Age <12yr (not recommended; codeine/tramadol restrictions)','Acute intoxication with opioids, alcohol, sedatives','Breastfeeding (variable CYP2D6 — risk of neonatal OD)'],
+  pearls:['✅ WIDELY AVAILABLE and CHEAP in Indonesia — practical first-line for moderate pain','✅ Less respiratory depression than morphine — safer in outpatient settings','✅ Useful bridge between NSAIDs and strong opioids','⚠ SEROTONIN SYNDROME with MAOIs, SSRIs, SNRIs, triptans — inquire about medications!','⚠ LOWERS SEIZURE THRESHOLD — avoid in epileptic patients','⚠ Variable metabolism (CYP2D6 genetic polymorphism) — some patients ultra-rapid metabolizers (overdose risk), some poor metabolizers (no effect)','⚠ CAN CAUSE SEIZURES at high doses or in predisposed patients','⚠ IV form: give SLOWLY over 15 min (nausea, dizziness, seizure risk with rapid push)'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Moderate pain IV',dose:'50–100 mg IV over 15–20 min',titrate:'q6–8h prn; max 400 mg/day',note:'NEVER rapid IV push'},
+    {pop:'Adult 60–70 kg',ind:'Moderate pain PO',dose:'50–100 mg PO',titrate:'q4–6h prn; max 400 mg/day',note:'Oral bioavailability ~75%'},
+    {pop:'Adult 60–70 kg',ind:'Post-op pain IM',dose:'50–100 mg IM',titrate:'q6h prn',note:'Onset 20–30 min IM'},
+    {pop:'Elderly >65yr',ind:'Moderate pain',dose:'MAX 50 mg/dose IV/PO',titrate:'q6–8h MAX 300 mg/day',note:'Seizure + serotonin risk higher'},
+    {pop:'Renal impairment (CrCl <30)',ind:'Pain',dose:'50 mg q12h MAX',titrate:'Minimal titration',note:'Significant accumulation risk'},
+    {pop:'Peds 12–17yr',ind:'Moderate pain',dose:'1–2 mg/kg PO = 50–100 mg; IV 1 mg/kg = 50 mg',titrate:'q6h; max 400 mg/day',note:'NOT for <12yr'},
+  ],
+  monitoring:[{l:'Pain NRS',t:'≤4',n:'Reassess q30 min after IV'},{l:'Nausea/Vomiting',t:'Very common — treat prophylactically',n:'Ondansetron 4 mg'},{l:'Seizure activity',t:'Watch if predisposed',n:''},{l:'Serotonin symptoms',t:'Agitation, hyperthermia, clonus',n:'If on serotonergic drugs'},{l:'SpO2 / RR',t:'Less risk than morphine but monitor',n:''}],
+  overdose:{signs:['Seizures (more common than pure opioid OD)','Serotonin syndrome: fever, agitation, clonus, hyperreflexia','Respiratory depression (less than morphine)','Coma (high dose)'],mgmt:['Seizures: benzodiazepine first line (diazepam/midazolam)','Serotonin syndrome: STOP drug, cyproheptadine 4–8 mg PO, cooling, benzo for agitation','Respiratory depression: naloxone (partial reversal of opioid component only — does NOT reverse serotonin effects)'],antidote:'NALOXONE for opioid component — partial reversal. May WORSEN serotonin syndrome or precipitate seizures. Use cautiously.'},
+  titrate:'For acute IV: give full dose over 15–20 min, reassess NRS at 30 min. If insufficient → add ketorolac or low-dose opioid rather than exceeding tramadol daily limit.',
+  calcDoses:[
+    {ind:'Moderate pain IV',formula:(w)=>({low:50,high:100,unit:'mg IV over 15–20 min',note:'Never rapid push; max 400 mg/day'}),flag:(w,age)=>age&&age>65?'⚠ Elderly: max 50 mg/dose, max 300 mg/day':null},
+    {ind:'PO dosing',formula:(w)=>({low:50,high:100,unit:'mg PO',note:'q4–6h; max 400 mg/day'}),flag:null},
+    {ind:'Peds ≥12yr IV/IM',formula:(w)=>({low:+(w*1).toFixed(0),high:+(w*1).toFixed(0),unit:'mg IV',note:'Max 100 mg per dose; over 15 min'}),flag:(w)=>w<40?'⚠ Check age — tramadol not recommended <12yr':null},
+  ]
+},
+// ─── NEUROMUSCULAR BLOCKERS ───────────────────────────────────────
+{
+  id:'succinylcholine', name:'Succinylcholine', cat:'nmd', class:'Depolarizing NMB',
+  routes:['IV','IM (higher dose)'], avail:'Available in Indonesia — essential for RSI',
+  mech:'Depolarizes NMJ → initial fasciculations → sustained depolarization → paralysis. Hydrolyzed by plasma cholinesterase. Duration 8–10 min.',
+  indications:['RSI — FIRST LINE paralytic','Laryngospasm','Brief procedures requiring complete paralysis'],
+  contraindications:['ABSOLUTE: Burns >48hr, crush injury, denervation, prolonged immobility, rhabdomyolysis, hyperkalemia K+>5.5 — LETHAL HYPERKALEMIA RISK','Personal/family history malignant hyperthermia','Pseudocholinesterase deficiency (prolonged block hours)','Penetrating eye injury (raises IOP)','Duchenne/Becker muscular dystrophy'],
+  pearls:['✅ FASTEST onset paralytic: 45–60 sec IV — ideal for full-stomach RSI','✅ SHORTEST duration: 8–10 min — if unable to intubate, patient breathes again','⚠ FASCICULATIONS raise K+ 0.5 mEq/L in EVERYONE — lethal if already hyperkalemic','⚠ NEVER use in >48hr burns, crush injury, spinal cord injury, prolonged ICU bedrest','⚠ Defasciculation: rocuronium 0.06 mg/kg IV 3 min before reduces fasciculations','⚠ Malignant hyperthermia: rising temp, rigidity, acidosis — DANTROLENE immediately'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'RSI',dose:'1.5 mg/kg IV = 90–105 mg',titrate:'Single bolus',note:'After induction; intubate 45–60 sec'},
+    {pop:'Adult 60–70 kg',ind:'Laryngospasm IV',dose:'0.1–0.5 mg/kg IV = 6–35 mg',titrate:'Single',note:''},
+    {pop:'Adult 60–70 kg',ind:'Laryngospasm IM (no IV)',dose:'4 mg/kg IM = 240–280 mg',titrate:'Single',note:'IM if no access'},
+    {pop:'Peds 5yr (20 kg)',ind:'RSI',dose:'2 mg/kg IV = 40 mg',titrate:'Single',note:'Higher mg/kg in peds!'},
+    {pop:'Peds 10yr (30 kg)',ind:'RSI',dose:'2 mg/kg IV = 60 mg',titrate:'Single',note:''},
+    {pop:'Adolescent (50 kg)',ind:'RSI',dose:'1.5 mg/kg IV = 75 mg',titrate:'Single',note:''},
+    {pop:'Infant <1yr',ind:'RSI',dose:'3 mg/kg IV',titrate:'Single',note:'Atropine 0.02 mg/kg pre-treatment'},
+  ],
+  monitoring:[{l:'Intubation conditions',t:'Jaw relaxed 45–60 sec',n:''},{l:'Duration',t:'8–10 min recovery',n:'Check twitches'},{l:'SpO2',t:'Pre-oxygenate ≥95%',n:''},{l:'EtCO2',t:'Confirm intubation',n:'Gold standard'},{l:'K+ serum',t:'Check pre-RSI if at risk',n:''},{l:'Temperature',t:'Watch for MH rise',n:''}],
+  overdose:{signs:['Prolonged paralysis (hours) = pseudocholinesterase deficiency','Malignant Hyperthermia: temp >40°C, rigidity, rhabdomyolysis, acidosis'],mgmt:['Prolonged block: maintain intubation and sedation — wait for natural resolution','MH: DANTROLENE 2.5 mg/kg IV, repeat q5 min up to 10 mg/kg; active cooling; bicarbonate; hyperventilate'],antidote:'NO reversal for succinylcholine. DANTROLENE for MH only.'},
+  titrate:'NOT titrated — single RSI bolus. If re-paralysis needed, switch to rocuronium.',
+  calcDoses:[
+    {ind:'RSI (adult/adolescent)',formula:(w)=>({low:+(w*1.5).toFixed(0),high:+(w*1.5).toFixed(0),unit:'mg IV',note:'Single bolus; intubate at 45–60 sec'}),flag:null},
+    {ind:'RSI (children <12yr)',formula:(w)=>({low:+(w*2).toFixed(0),high:+(w*2).toFixed(0),unit:'mg IV',note:'Children need 2 mg/kg'}),flag:null},
+    {ind:'Laryngospasm IM (no IV)',formula:(w)=>({low:+(w*4).toFixed(0),high:+(w*4).toFixed(0),unit:'mg IM',note:'Higher dose IM for adequate effect'}),flag:null},
+  ]
+},
+{
+  id:'rocuronium', name:'Rocuronium', cat:'nmd', class:'Non-Depolarizing NMB',
+  routes:['IV only'], avail:'Available in Indonesia (increasingly common)',
+  mech:'Competitive nicotinic ACh receptor antagonist at NMJ. No fasciculations. At 1.2 mg/kg: onset 60–75 sec (nearly matches succinylcholine).',
+  indications:['RSI when succinylcholine contraindicated','Post-intubation ongoing neuromuscular blockade (ICU)','Facilitated intubation'],
+  contraindications:['Known hypersensitivity (cross-reactivity with other NMBDs)','If sugammadex NOT available — weigh risk of prolonged blockade carefully'],
+  pearls:['✅ NO hyperkalemia risk — safe in burns, crush injury, denervation','✅ NO malignant hyperthermia trigger','✅ At 1.2 mg/kg: onset 60–75 sec — nearly matches succinylcholine','✅ SUGAMMADEX reverses profound blockade within 3 min — changes RSI safety profile','⚠ Duration MUCH longer: 30–60 min at RSI doses — cannot extubate quickly without sugammadex','⚠ MUST have sugammadex available when using for RSI'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'RSI',dose:'1.2 mg/kg IV = 72–84 mg',titrate:'Single; intubate 60–75 sec',note:'Must have sugammadex'},
+    {pop:'Adult 60–70 kg',ind:'Facilitated intubation',dose:'0.6 mg/kg IV = 36–42 mg',titrate:'Single; onset 90 sec, duration 30 min',note:''},
+    {pop:'Adult 60–70 kg',ind:'ICU infusion',dose:'10–12 mcg/kg/min infusion',titrate:'Titrate to TOF 1–2 twitches',note:'Always with sedation+analgesia'},
+    {pop:'Peds 5yr (20 kg)',ind:'RSI',dose:'1.2 mg/kg IV = 24 mg',titrate:'Single',note:''},
+    {pop:'Peds 10yr (30 kg)',ind:'RSI',dose:'1.2 mg/kg IV = 36 mg',titrate:'Single',note:''},
+  ],
+  monitoring:[{l:'TOF (train-of-four)',t:'0–1 twitch for deep block',n:'Use nerve stimulator'},{l:'Duration',t:'Reassess 30–45 min',n:''},{l:'Post-intubation sedation',t:'ALWAYS sedate paralyzed patients',n:'Paralysis ≠ anesthesia'},{l:'Sugammadex readiness',t:'At bedside for RSI rocuronium',n:''}],
+  overdose:{signs:['Prolonged paralysis','Cannot extubate — unable to ventilate if extubated prematurely'],mgmt:['Continue mechanical ventilation','Sugammadex for reversal at any depth'],antidote:'SUGAMMADEX: Profound block (RSI dose 1.2 mg/kg) → 16 mg/kg IV = ~1000 mg (70 kg). Works in 3 min. Moderate block → 4 mg/kg. Shallow block → 2 mg/kg.'},
+  titrate:'Fixed dose for RSI. ICU infusion: titrate by TOF — aim 1–2 twitches out of 4.',
+  calcDoses:[
+    {ind:'RSI (1.2 mg/kg)',formula:(w)=>({low:+(w*1.2).toFixed(0),high:+(w*1.2).toFixed(0),unit:'mg IV',note:'Single; intubate 60–75 sec; have sugammadex ready'}),flag:null},
+    {ind:'Facilitated intubation (0.6 mg/kg)',formula:(w)=>({low:+(w*0.6).toFixed(0),high:+(w*0.6).toFixed(0),unit:'mg IV',note:'Onset 90 sec; duration 30 min'}),flag:null},
+    {ind:'Sugammadex reversal (profound block)',formula:(w)=>({low:+(w*16).toFixed(0),high:+(w*16).toFixed(0),unit:'mg IV SUGAMMADEX',note:'16 mg/kg — reversal in 3 min'}),flag:null},
+  ]
+},
+// ─── HEMOSTATICS ─────────────────────────────────────────────────
+{
+  id:'txa', name:'Tranexamic Acid (TXA)', cat:'hemostatic', class:'Antifibrinolytic',
+  routes:['IV','PO','Topical'], avail:'Available in Indonesia — TXA generic, also Kalnex brand',
+  mech:'Lysine analogue that competitively inhibits plasminogen → prevents clot breakdown (antifibrinolytic). Does NOT form new clot — preserves existing clot. MOST effective when given EARLY.',
+  indications:['Major trauma with hemorrhagic shock — EARLY (<3hr from injury)','Post-partum hemorrhage (PPH) — FIRST LINE adjunct (WHO recommendation)','Massive GI bleeding (adjunct)','Surgical hemorrhage prevention','Traumatic brain injury with bleeding','Epistaxis (topical/IV)'],
+  contraindications:['Active thromboembolic disease (DVT, PE, arterial thrombosis) — RELATIVE','History of seizures (TXA lowers seizure threshold at high doses)','Subarachnoid hemorrhage (avoid systemic — increases hydrocephalus risk)','Renal failure requires dose reduction (accumulation)'],
+  pearls:['✅ GOLDEN WINDOW: Give within 1hr (best) or within 3hr of injury/PPH onset — efficacy drops after 3hr, HARMFUL if given >3hr post-trauma','✅ Evidence-based: CRASH-2 trial — reduces mortality in major trauma if given <3hr','✅ MATTT trial / WHO: TXA reduces PPH mortality significantly','✅ Topical: 500 mg in 10 mL saline for epistaxis or wound packing — effective and safe','⚠ TIMING IS EVERYTHING — do not delay; give before blood products if possible','⚠ Give IV SLOWLY — rapid IV push causes hypotension','⚠ Seizure risk at high doses (>50 mg/kg) — standard doses safe'],
+  doses:[
+    {pop:'Adult (trauma / PPH)',ind:'Loading dose',dose:'1 g IV over 10 min',titrate:'Follow with 1 g IV over 8 hours',note:'MUST give within 3hr of injury/PPH'},
+    {pop:'Adult (trauma / PPH)',ind:'Maintenance',dose:'1 g IV over 8 hours',titrate:'Single maintenance after loading dose',note:'Total 2 g over ~8hr'},
+    {pop:'Adult (PPH only)',ind:'If no IV: IM or PO',dose:'1 g IM or 2 g PO',titrate:'Single dose if IV unavailable',note:'Less evidence but used in resource-limited settings'},
+    {pop:'Adult',ind:'Pre-surgical (bleeding prevention)',dose:'10–15 mg/kg IV over 15 min',titrate:'Single pre-op dose',note:''},
+    {pop:'Peds (trauma)',ind:'Loading dose',dose:'15 mg/kg IV over 10 min (max 1 g)',titrate:'Then 2 mg/kg/hr infusion × 8hr',note:'Within 3hr of injury'},
+    {pop:'Peds 5yr (20 kg)',ind:'TXA trauma',dose:'15 mg/kg = 300 mg loading',titrate:'Then 2 mg/kg/hr = 40 mg/hr',note:''},
+    {pop:'Peds 10yr (30 kg)',ind:'TXA trauma',dose:'15 mg/kg = 450 mg loading',titrate:'Then 60 mg/hr',note:''},
+    {pop:'Topical use',ind:'Epistaxis/wound',dose:'500 mg in 10 mL NS topically',titrate:'Apply once; may repeat',note:'Or TXA-soaked gauze packing'},
+  ],
+  monitoring:[{l:'Hemorrhage control',t:'↓bleeding volume, HR stabilizing, BP improving',n:'Primary clinical endpoint'},{l:'BP during infusion',t:'Avoid rapid IV push',n:'Hypotension risk'},{l:'Thromboembolic signs',t:'DVT, PE symptoms',n:'Rare at standard doses'},{l:'Serum creatinine',t:'Dose reduction if renal failure',n:''},{l:'Seizures',t:'Watch if high dose',n:'Standard doses safe'}],
+  overdose:{signs:['Seizures (dose-dependent — high doses only)','Thromboembolic events (theoretical)','Hypotension (rapid IV)'],mgmt:['Seizures: benzodiazepine (diazepam/midazolam)','Slow or stop infusion','Supportive care'],antidote:'NO specific antidote.'},
+  titrate:'Trauma/PPH: give full 1 g loading dose regardless of weight. Repeat maintenance only if bleeding ongoing. Do NOT give a 2nd loading dose.',
+  calcDoses:[
+    {ind:'Trauma / PPH loading dose (adults)',formula:(w)=>({low:1000,high:1000,unit:'mg IV over 10 min',note:'Then 1000 mg over 8hr; GIVE <3hr'}),flag:null},
+    {ind:'Peds loading dose (15 mg/kg)',formula:(w)=>({low:+(w*15).toFixed(0),high:+(w*15).toFixed(0),unit:'mg IV over 10 min',note:'Max 1000 mg; then 2 mg/kg/hr'}),flag:null},
+    {ind:'Peds maintenance infusion',formula:(w)=>({low:+(w*2).toFixed(0),high:+(w*2).toFixed(0),unit:'mg/hr IV',note:'Over 8 hours'}),flag:null},
+  ]
+},
+{
+  id:'vitaminK', name:'Vitamin K₁ (Phytonadione)', cat:'hemostatic', class:'Coagulation Factor Cofactor',
+  routes:['IV (slow)','IM','SC','PO'], avail:'Available in Indonesia — widely available',
+  mech:'Essential cofactor for hepatic synthesis of clotting factors II, VII, IX, X (and protein C, S). IV/IM onset 6–12hr (needs hepatic synthesis). Full effect 24–48hr. PO slower still.',
+  indications:['Warfarin / anticoagulant overdose reversal','Vitamin K deficiency bleeding (neonatal, malabsorption, liver disease)','INR >10 or significant bleeding on warfarin','Prophylaxis: newborn hemorrhagic disease of the newborn (routine IM at birth)'],
+  contraindications:['Hypersensitivity (IV anaphylaxis risk — RARE but give slowly)','Heparin-induced bleeding (no effect — vit K only reverses vitamin K antagonists)'],
+  pearls:['✅ Reverses warfarin/coumadin anticoagulation effectively','⚠ SLOW onset — for EMERGENCY bleeding: give FRESH FROZEN PLASMA (FFP) or 4-Factor PCC (Prothrombin Complex Concentrate) for IMMEDIATE reversal','⚠ IV route: anaphylaxis risk — ALWAYS dilute in 50 mL NS and infuse over 30 min; have epinephrine ready','⚠ IM route: hematoma risk in anticoagulated patients — prefer IV or SC/PO if not bleeding acutely','⚠ High doses (>10 mg) make re-anticoagulation difficult for days afterward','⚠ No effect on heparin, LMWH, DOAC (rivaroxaban, apixaban, dabigatran) bleeding'],
+  doses:[
+    {pop:'Adult — warfarin reversal (NOT actively bleeding)',ind:'INR 4.5–10, minor symptoms',dose:'2–5 mg PO or IV',titrate:'Recheck INR in 24hr; repeat prn',note:'Avoid IM in anticoagulated pt'},
+    {pop:'Adult — warfarin reversal (ACTIVE/SERIOUS bleeding)',ind:'Life-threatening hemorrhage',dose:'10 mg IV slow over 30 min',titrate:'PLUS FFP/PCC for immediate reversal',note:'Vit K alone not fast enough — use FFP/PCC'},
+    {pop:'Peds / Neonatal prophylaxis',ind:'Hemorrhagic disease of newborn prevention',dose:'0.5–1 mg IM at birth (term); 0.5 mg for preterm',titrate:'Single prophylactic dose',note:'Routine in Indonesian hospitals'},
+    {pop:'Peds — bleeding/deficiency',ind:'Active bleeding',dose:'0.03–0.1 mg/kg IV slow (max 10 mg)',titrate:'Single; repeat in 12–24hr if needed',note:''},
+  ],
+  monitoring:[{l:'INR / PT',t:'Repeat 6–24hr post-dose',n:'Track response'},{l:'Bleeding signs',t:'Active hemorrhage control',n:''},{l:'Anaphylaxis (IV)',t:'First 5 min of infusion',n:'Have epinephrine ready'}],
+  overdose:{signs:['No significant toxicity from excess vitamin K₁','Theoretical: thrombosis if given to non-anticoagulated patient in excess'],mgmt:['Symptomatic treatment only'],antidote:'None needed.'},
+  titrate:'Based on INR response. For INR >10: start 5–10 mg, check INR in 12–24hr, re-dose if INR still elevated.',
+  calcDoses:[
+    {ind:'Warfarin reversal — non-bleeding',formula:(w)=>({low:2,high:5,unit:'mg IV/PO',note:'Recheck INR at 24hr'}),flag:null},
+    {ind:'Warfarin reversal — active bleeding',formula:(w)=>({low:10,high:10,unit:'mg IV over 30 min',note:'PLUS FFP/PCC for immediate effect'}),flag:null},
+    {ind:'Peds deficiency bleeding',formula:(w)=>({low:+(w*0.03).toFixed(2),high:+(w*0.1).toFixed(2),unit:'mg IV slow',note:'Max 10 mg; dilute in NS'}),flag:null},
+  ]
+},
+{
+  id:'ffp', name:'Fresh Frozen Plasma (FFP)', cat:'hemostatic', class:'Blood Product — Coagulation Factor Replacement',
+  routes:['IV only'], avail:'Available in Indonesian hospitals with blood bank',
+  mech:'Contains all plasma clotting factors (I, II, V, VII, VIII, IX, X, XI) + protein C, S, antithrombin. Replaces multiple factor deficiencies simultaneously. Onset: upon transfusion.',
+  indications:['Massive hemorrhage / massive transfusion protocol (MTP)','Warfarin/anticoagulant reversal with active LIFE-THREATENING bleeding','Disseminated Intravascular Coagulation (DIC) with bleeding','PT/INR >1.5× normal with surgical/procedural hemorrhage','Liver failure coagulopathy with active bleeding','Thrombotic Thrombocytopenic Purpura (TTP) — plasma exchange'],
+  contraindications:['Known allergic reactions to plasma products (relative)','Volume overload (CHF, renal failure) — use concentrated products if possible','Not indicated for volume expansion alone','Not indicated for mild INR elevation without bleeding'],
+  pearls:['✅ ONLY immediately effective therapy for multi-factor coagulopathy in active bleeding','✅ Use BEFORE laboratory results in suspected coagulopathy with life-threatening hemorrhage','✅ Massive Transfusion Protocol: give in ratio pRBC:FFP:Platelets = 1:1:1','⚠ Must be ABO compatible (type-specific preferred; AB plasma is universal)','⚠ Takes 15–30 min to thaw — ORDER EARLY when anticipating massive transfusion','⚠ Transfusion-related lung injury (TRALI), TACO (fluid overload), allergic reactions','⚠ Each unit ~200–250 mL — volume load in already fluid-overloaded patients','⚠ Short shelf life once thawed — use within 24hr'],
+  doses:[
+    {pop:'Adult — coagulopathy/MTP',ind:'Active major hemorrhage',dose:'10–15 mL/kg IV = 600–1000 mL (65 kg)',titrate:'Repeat based on INR/ongoing hemorrhage',note:'Each unit ~200–250 mL = ~3–4 units'},
+    {pop:'Adult — warfarin reversal (bleeding)',ind:'Urgent reversal',dose:'10–15 mL/kg = 600–1000 mL',titrate:'Check PT/INR after — repeat if >1.5×',note:'Plus Vit K 10 mg IV'},
+    {pop:'Adult — DIC',ind:'Active bleeding with DIC',dose:'10–15 mL/kg',titrate:'Guided by serial coagulation tests',note:''},
+    {pop:'Peds',ind:'Coagulopathy bleeding',dose:'10–15 mL/kg IV',titrate:'Repeat per coagulation tests',note:'Each unit ~200 mL for peds'},
+  ],
+  monitoring:[{l:'PT / INR',t:'Target INR <1.5',n:'Recheck after transfusion'},{l:'aPTT',t:'Target <1.5× normal',n:''},{l:'Fibrinogen',t:'>1.5 g/L',n:'If DIC'},{l:'Hb / Hematocrit',t:'Target Hb >7–8 g/dL',n:''},{l:'Vital signs',t:'BP, HR, SpO2',n:'Transfusion reaction monitoring'},{l:'Lung auscultation',t:'Watch for TACO/TRALI',n:'New crackles, SpO2 drop during transfusion'}],
+  overdose:{signs:['Transfusion reactions: fever, urticaria, hemolytic reaction (chills, back pain, hemoglobinuria)','TACO: fluid overload, pulmonary edema','TRALI: acute hypoxia within 6hr, bilateral infiltrates (non-cardiogenic)'],mgmt:['STOP transfusion immediately if severe reaction','Allergic/febrile: antihistamine ± paracetamol ± steroids','TACO: diuretics, O2','TRALI: supportive O2, NIV; no diuretics (not fluid overload)','Hemolytic: aggressive IV fluids, check blood bank'],antidote:'Stop transfusion; supportive care.'},
+  titrate:'10–15 mL/kg per "dose" — reassess INR and clinical hemorrhage after each transfusion cycle.',
+  calcDoses:[
+    {ind:'Coagulopathy/MTP dose',formula:(w)=>({low:+(w*10).toFixed(0),high:+(w*15).toFixed(0),unit:'mL IV',note:'= ~3–4 units FFP (200–250 mL each)'}),flag:null},
+  ]
+},
+{
+  id:'cryoprecipitate', name:'Cryoprecipitate', cat:'hemostatic', class:'Blood Product — Fibrinogen/Factor VIII Concentrate',
+  routes:['IV only'], avail:'Available in Indonesian hospitals with blood bank',
+  mech:'Cold-precipitated plasma fraction rich in: fibrinogen (Factor I), Factor VIII, Factor XIII, vWF, fibronectin. Primary use: fibrinogen replacement.',
+  indications:['Hypofibrinogenemia (<1.5 g/L) with active bleeding','DIC with fibrinogen depletion','Massive transfusion — fibrinogen replacement','Haemophilia A (Factor VIII) if recombinant/concentrate unavailable','von Willebrand disease (if DDAVP fails and no concentrate)'],
+  contraindications:['IgA deficiency (anaphylaxis risk from plasma)','Hypervolemia (less concern than FFP — smaller volume)'],
+  pearls:['✅ The ONLY product that efficiently replaces fibrinogen in most Indonesian ER/ICU settings','✅ Much smaller volume than FFP for fibrinogen replacement','⚠ Target fibrinogen >1.5 g/L (>2 g/L in obstetric hemorrhage — PPH)','⚠ Same transfusion reactions as FFP — monitor during infusion','⚠ ABO compatible preferred but not critical (small volume)','⚠ Each pool (unit) ~150–200 mL, contains ~250 mg fibrinogen per unit'],
+  doses:[
+    {pop:'Adult',ind:'Fibrinogen replacement',dose:'1 unit per 5 kg body weight = 10–12 units (65 kg)',titrate:'Target fibrinogen >1.5–2 g/L; repeat per labs',note:'Each unit ~250 mg fibrinogen'},
+    {pop:'Adult — DIC/PPH',ind:'Massive hemorrhage with low fibrinogen',dose:'10 units pooled cryoprecipitate',titrate:'Recheck fibrinogen 1hr post',note:'PPH target >2 g/L'},
+    {pop:'Peds',ind:'Fibrinogen replacement',dose:'5–10 mL/kg IV = ~1–2 units/10 kg',titrate:'Per fibrinogen level',note:''},
+  ],
+  monitoring:[{l:'Fibrinogen level',t:'>1.5 g/L (>2 g/L in PPH)',n:'Check 1hr post-transfusion'},{l:'PT/aPTT',t:'Improving',n:''},{l:'Transfusion reaction signs',t:'Monitor during infusion',n:''}],
+  overdose:{signs:['Transfusion reactions (less common than FFP)','Hypervolemia (less risk — smaller volume)'],mgmt:['Stop transfusion','Treat reaction per type'],antidote:'Stop transfusion; supportive.'},
+  titrate:'Per fibrinogen level. Target >1.5 g/L (or >2 g/L in obstetric hemorrhage). Recheck fibrinogen 1hr after transfusion.',
+  calcDoses:[
+    {ind:'Fibrinogen replacement',formula:(w)=>({low:Math.round(w/5),high:Math.round(w/5)+2,unit:'units cryoprecipitate',note:'Target fibrinogen >1.5–2 g/L; recheck 1hr post'}),flag:null},
+  ]
+},
+// ─── ANTIDOTES ────────────────────────────────────────────────────
+{
+  id:'naloxone', name:'Naloxone', cat:'antidote', class:'Opioid Antagonist',
+  routes:['IV','IM','SC','IN'], avail:'Available in Indonesia',
+  mech:'Pure competitive opioid receptor antagonist. Reverses all opioid effects (analgesia, sedation, respiratory depression) within 1–2 min IV. Duration 30–90 min.',
+  indications:['Opioid overdose — respiratory depression, coma','Post-procedural opioid reversal','Diagnostic: confirm opioid toxidrome','Opioid-induced pruritis (low dose)'],
+  contraindications:['Opioid-dependent patients — precipitates acute PAINFUL withdrawal + seizure risk','Post-op pain — partial reversal preferred','Tramadol OD — use cautiously (may worsen seizures)'],
+  pearls:['✅ LIFE-SAVING — give EARLY in any suspected opioid toxidrome','✅ IN (intranasal) 2 mg per nostril — effective, no IV needed','⚠ SHORT DURATION (30–90 min) — patient may RE-NARCOTICIZE afterward','⚠ Do NOT fully reverse in opioid-tolerant patients (seizures, acute pulmonary edema)','⚠ Monitor for AT LEAST 2 hours after reversal','⚠ Long-acting opioids (methadone, fentanyl patch): INFUSION essential'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'Opioid OD — respiratory depression',dose:'0.4–2 mg IV/IM/SC',titrate:'Repeat q2–3 min until RR >12; max 10 mg',note:'Titrate to RR not to full awakening'},
+    {pop:'Adult 60–70 kg',ind:'IN (no IV access)',dose:'2 mg per nostril (4 mg total) IN',titrate:'Repeat in 5 min if no response',note:'Use atomizer'},
+    {pop:'Adult 60–70 kg',ind:'Infusion (long-acting opioid)',dose:'2/3 of reversal dose per hour IV',titrate:'Titrate to RR 12–20',note:'e.g., needed 1 mg → infuse 0.66 mg/hr'},
+    {pop:'Peds <5yr / <20 kg',ind:'Opioid OD',dose:'0.01 mg/kg IV',titrate:'q2–3 min prn; max 2 mg/dose',note:''},
+    {pop:'Peds 5yr (20 kg)',ind:'OD',dose:'0.01 mg/kg = 0.2 mg IV',titrate:'Repeat q2–3 min',note:''},
+    {pop:'Peds 10yr (30 kg)',ind:'OD',dose:'0.01 mg/kg = 0.3 mg IV',titrate:'q2–3 min prn',note:''},
+    {pop:'Neonate',ind:'Respiratory depression at birth',dose:'0.01 mg/kg IV/IM/ET',titrate:'q2–3 min prn',note:'Can precipitate seizures if opioid dependent'},
+  ],
+  monitoring:[{l:'RR',t:'>12/min',n:'Primary target'},{l:'SpO2',t:'≥94%',n:''},{l:'AVPU',t:'Appropriate — do not over-reverse',n:''},{l:'Pain return',t:'Re-emergence of pain',n:'Manage without opioids temporarily'},{l:'Withdrawal signs',t:'Agitation, tachy, hypertension',n:'If fully reversed in dependent pt'},{l:'Duration monitoring',t:'≥2hr after last naloxone',n:''}],
+  overdose:{signs:['Over-reversal: acute withdrawal, agitation','Acute pulmonary edema (rare)'],mgmt:['Over-reversal: re-opioidize with 1–2 mg morphine IV carefully','APO: O2, NIV'],antidote:'None — naloxone itself is the antidote.'},
+  titrate:'Titrate to RESPIRATORY RATE not to consciousness. Give 0.4 mg IV → wait 2 min → assess RR. Opioid-tolerant: use 0.04–0.1 mg aliquots.',
+  calcDoses:[
+    {ind:'Opioid OD IV',formula:(w)=>({low:0.4,high:2,unit:'mg IV',note:'Repeat q2–3 min; titrate to RR; max 10 mg'}),flag:null},
+    {ind:'Intranasal (IN)',formula:(w)=>({low:4,high:4,unit:'mg IN total',note:'2 mg per nostril; repeat in 5 min'}),flag:null},
+    {ind:'Peds IV',formula:(w)=>({low:+(w*0.01).toFixed(3),high:+(w*0.01).toFixed(3),unit:'mg IV',note:'q2–3 min; max 2 mg per dose'}),flag:null},
+  ]
+},
+{
+  id:'flumazenil', name:'Flumazenil', cat:'antidote', class:'Benzodiazepine Antagonist',
+  routes:['IV only'], avail:'Available in Indonesia (less common)',
+  mech:'Competitive antagonist at GABA-A benzodiazepine site. Reverses sedation within 1–2 min.',
+  indications:['Reversal of benzodiazepine overdose / excessive procedural sedation','Diagnostic: confirm benzo toxidrome'],
+  contraindications:['BENZO-DEPENDENT PATIENTS — SEIZURES (life-threatening)','Benzos used to control seizures','TCA co-ingestion (seizure risk)','Elevated ICP on benzos'],
+  pearls:['✅ Effective reversal within 1–2 min IV','⚠ SHORT DURATION 20–40 min — RE-SEDATION common especially with long-acting benzo','⚠ Seizure risk in chronic benzo users — avoid if long-term use history','⚠ Does NOT reverse opioids, alcohol, ketamine, propofol'],
+  doses:[
+    {pop:'Adult',ind:'Benzo reversal',dose:'0.2 mg IV over 30 sec',titrate:'0.1 mg q1 min; max 1 mg (or 3 mg total in benzo OD)',note:'Stop at adequate reversal'},
+    {pop:'Peds >1yr',ind:'Benzo reversal',dose:'0.01 mg/kg IV over 15 sec (max 0.2 mg)',titrate:'Repeat q1 min; max 0.05 mg/kg or 1 mg',note:''},
+  ],
+  monitoring:[{l:'Sedation level',t:'Responsive to voice',n:''},{l:'RR',t:'>12/min',n:''},{l:'Re-sedation',t:'Monitor 2–4 hours',n:'Most important'},{l:'Seizures',t:'Watch 30 min post-dose',n:''}],
+  overdose:{signs:['Acute withdrawal seizure (benzo-dependent)','Agitation'],mgmt:['Seizure: propofol or phenobarbital (benzos won\'t work well)','Agitation: reassurance, quiet environment'],antidote:'None — supportive.'},
+  titrate:'Give slowly: 0.2 mg, wait 1 min, assess. Re-dose 0.1 mg up to 1 mg. No response after 1 mg total — NOT a pure benzo overdose.',
+  calcDoses:[
+    {ind:'Benzo reversal adult',formula:(w)=>({low:0.2,high:1,unit:'mg IV (titrated)',note:'Start 0.2 mg; add 0.1 mg q1 min; max 1 mg'}),flag:null},
+    {ind:'Peds reversal',formula:(w)=>({low:+(w*0.01).toFixed(3),high:+(w*0.01).toFixed(3),unit:'mg IV',note:'Max 0.2 mg per dose; max 0.05 mg/kg total'}),flag:null},
+  ]
+},
+{
+  id:'sugammadex', name:'Sugammadex', cat:'antidote', class:'Selective NMB Reversal (Cyclodextrin)',
+  routes:['IV only'], avail:'Available in Indonesia (expensive)',
+  mech:'Modified γ-cyclodextrin that encapsulates rocuronium/vecuronium → inactivates them. NOT effective against succinylcholine or atracurium.',
+  indications:['Reversal of rocuronium or vecuronium blockade','CICO (Cannot Intubate Cannot Oxygenate) — emergency reversal of rocuronium RSI','Routine post-surgical reversal'],
+  contraindications:['Hypersensitivity (anaphylaxis possible)','NOT for succinylcholine, atracurium, cisatracurium — NO EFFECT','Renal impairment — monitor extended'],
+  pearls:['✅ GAME CHANGER: Reverses FULL RSI rocuronium dose within 3 min','✅ Enables "rocuronium RSI" as safe alternative to succinylcholine','✅ CICO: 16 mg/kg IV — restores breathing in 3 min','⚠ EXPENSIVE — discuss hospital availability before using rocuronium RSI','⚠ Anaphylaxis: rare but reported — epinephrine at bedside','⚠ After 16 mg/kg reversal — cannot use rocuronium for 24hr'],
+  doses:[
+    {pop:'Adult 60–70 kg',ind:'CICO / Immediate full reversal (profound block)',dose:'16 mg/kg IV = 960–1120 mg',titrate:'Single bolus — works in 3 min',note:''},
+    {pop:'Adult 60–70 kg',ind:'Moderate block reversal (TOF ≥2)',dose:'4 mg/kg IV = 240–280 mg',titrate:'Single',note:''},
+    {pop:'Adult 60–70 kg',ind:'Shallow block',dose:'2 mg/kg IV = 120–140 mg',titrate:'Single',note:''},
+    {pop:'Peds',ind:'Reversal',dose:'Same mg/kg: 2/4/16 mg/kg',titrate:'Based on TOF depth',note:'Limited data <2yr'},
+  ],
+  monitoring:[{l:'TOF ratio',t:'>0.9 after reversal',n:'Use nerve stimulator'},{l:'Spontaneous breathing',t:'Returning within 3–5 min',n:''},{l:'Anaphylaxis',t:'Watch 15 min post-dose',n:''}],
+  overdose:{signs:['Anaphylaxis (rare)'],mgmt:['Epinephrine 0.3–0.5 mg IM, antihistamines, steroids, IV fluids'],antidote:'None needed.'},
+  titrate:'Fixed dose based on depth of block. Assess TOF before dosing to choose appropriate tier.',
+  calcDoses:[
+    {ind:'Profound block (RSI reversal / CICO)',formula:(w)=>({low:+(w*16).toFixed(0),high:+(w*16).toFixed(0),unit:'mg IV',note:'Single bolus; reversal in 3 min'}),flag:null},
+    {ind:'Moderate block (TOF ≥2)',formula:(w)=>({low:+(w*4).toFixed(0),high:+(w*4).toFixed(0),unit:'mg IV',note:'Single bolus'}),flag:null},
+    {ind:'Shallow block',formula:(w)=>({low:+(w*2).toFixed(0),high:+(w*2).toFixed(0),unit:'mg IV',note:'Single bolus'}),flag:null},
+  ]
+},
+];
+
+const SCENARIOS = [
+// ─── COMMON ──────────────────────────────────────────────────────
+{
+  id:'rsi', common:true,
+  title:'🫁 RAPID SEQUENCE INTUBATION (RSI)',
+  subtitle:'Unprotected airway / hypoxia / altered consciousness requiring intubation',
+  steps:[
+    {text:'PREPARATION: Pre-oxygenate 100% O2 × 3 min (NRM or BVM). Position (sniffing for adults, flat+towel for infants). Assemble: laryngoscope, ETT (7.0–7.5 adult; 4+age/4 peds), bougie, syringe, stylet, BVM, suction, post-intubation drugs ready.'},
+    {text:'PRETREATMENT (optional, 3 min before laryngoscopy):',drug:true},
+    {text:'→ Fentanyl 3 mcg/kg IV (adult 65 kg = 195 mcg) — blunts ICP/CV response. Atropine 0.02 mg/kg IV in peds <1yr — prevents bradycardia.'},
+    {text:'INDUCTION — choose based on hemodynamics:',drug:true},
+    {text:'→ HEMODYNAMICALLY STABLE: Propofol 1.5–2 mg/kg IV (100–130 mg, 65 kg). OR Ketamine 1.5–2 mg/kg IV (100–130 mg)'},
+    {text:'→ HEMODYNAMICALLY UNSTABLE / SHOCK: Etomidate 0.3 mg/kg IV (20 mg, 65 kg) — PREFERRED (maintains MAP). OR Ketamine 1.5–2 mg/kg IV'},
+    {text:'→ HEAD INJURY / ICP CONCERN: Etomidate 0.3 mg/kg IV (hemodynamically neutral, does not raise ICP) OR Ketamine (evidence improving)'},
+    {text:'PARALYTIC — immediately after induction:',drug:true},
+    {text:'→ DEFAULT: Succinylcholine 1.5 mg/kg IV (100 mg, 65 kg). Intubate at 45–60 sec.'},
+    {text:'→ SUXAMETHONIUM CONTRAINDICATED (burns >48h, hyperK, MH risk, crush): Rocuronium 1.2 mg/kg IV (78 mg). Intubate at 60–75 sec. MUST have Sugammadex 16 mg/kg available.'},
+    {text:'INTUBATION: Laryngoscope → visualize cords → pass ETT → inflate cuff. Confirm: EtCO2 waveform + bilateral chest auscultation + chest rise. Order CXR.'},
+    {text:'POST-INTUBATION (WITHIN 2 MIN):',drug:true},
+    {text:'→ Sedation: Midazolam 0.05 mg/kg IV q1–2h OR propofol 5–50 mcg/kg/min infusion + Fentanyl 25–100 mcg/hr. Target RASS -2 to -3. NEVER leave paralyzed patient without sedation.'},
+  ],
+  pearls:['Pre-oxygenate to SpO2 100% — buys apnea time (3 min healthy adult, 1–2 min in ill patient)','CICO scenario: sugammadex 16 mg/kg IV reversal + surgical airway (needle/surgical cricothyrotomy)','Cricoid pressure (Sellick): controversial — apply if assistant available but release immediately if impedes intubation','Post-intubation: reconfirm ETT position, start sedation immediately — awake paralysis is inhumane']
+},
+{
+  id:'agitation', common:true,
+  title:'😠 ACUTE AGITATION / EXCITED DELIRIUM',
+  subtitle:'Combative or threatening patient — safety and rapid de-escalation',
+  steps:[
+    {text:'ASSESS CAUSE WHILE SECURING SAFETY: Psychiatric, substance (meth, alcohol), metabolic (hypoglycemia, hypoxia), trauma, pain, delirium. Check BGL immediately. Establish IV if safe. Do NOT restrain without sedation (positional asphyxia risk).'},
+    {text:'VERBAL DE-ESCALATION FIRST: Calm voice, personal space, remove stimuli. If fails or danger to staff/patient → pharmacological.'},
+    {text:'MILD-MODERATE AGITATION (somewhat cooperative):'},
+    {text:'→ PO if possible: Diazepam 10 mg PO + Haloperidol 5–10 mg PO'},
+    {text:'→ IM (combative, no IV): Midazolam 5–10 mg IM. Consider haloperidol 5 mg IM combo.'},
+    {text:'SEVERE AGITATION / EXCITED DELIRIUM (dangerous — no IV):',drug:true},
+    {text:'→ KETAMINE 4–6 mg/kg IM = 260–400 mg (65 kg). FASTEST control: 3–5 min onset. Drug of choice for truly dangerous patients.'},
+    {text:'→ Alternative: Midazolam 10 mg IM ± Haloperidol 5 mg IM (slower than ketamine, but widely available)'},
+    {text:'ONCE IV ACCESS SECURED:',drug:true},
+    {text:'→ Midazolam 2–5 mg IV titrated q5 min prn. OR Ketamine 1–2 mg/kg IV. Assess agitation q10 min.'},
+    {text:'MONITORING: SpO2 continuous, RR q5 min, BP, BGL. BVM at bedside always. Lateral decubitus if unprotected airway.'},
+    {text:'TREAT THE CAUSE: Glucose for hypoglycemia, O2 for hypoxia, antibiotics for sepsis, pain management, etc.'},
+  ],
+  pearls:['Ketamine IM: fastest control before IV access — use in truly dangerous situations','Never restrain alone without sedation — positional asphyxia causes cardiac arrest in minutes','Excited delirium syndrome: high risk of sudden cardiac death — monitor continuously','Always have airway equipment immediately at bedside when sedating']
+},
+{
+  id:'paintrauma', common:true,
+  title:'🦴 PAINFUL TRAUMA — ACUTE PAIN',
+  subtitle:'Fracture, dislocation, burn, severe injury — pain management strategy',
+  steps:[
+    {text:'PAIN ASSESSMENT: NRS 0–10. Assess mechanism (fracture, burn, dislocation, crush). Document baseline before any intervention. Reassess q15–30 min.'},
+    {text:'MILD PAIN (NRS 1–3): Paracetamol 1g IV/PO. NSAID if no contraindication.'},
+    {text:'MODERATE PAIN (NRS 4–6): Ketorolac 30 mg IV/IM + Paracetamol 1g. Tramadol 50–100 mg IV slow (over 20 min) or PO if opioid-sparing desired.'},
+    {text:'SEVERE PAIN (NRS 7–10) — FRACTURES, BURNS, DISLOCATIONS:',drug:true},
+    {text:'→ MORPHINE 0.05–0.1 mg/kg IV = 3–6 mg (65 kg). Titrate 2–4 mg q5–10 min to NRS ≤4. PLUS Ketorolac 30 mg IV (opioid-sparing). Monitor SpO2+RR.'},
+    {text:'→ OR FENTANYL (faster onset): 1 mcg/kg IV = 65 mcg. Titrate 25–50 mcg q5 min. OR IN 1.5 mcg/kg if no IV.'},
+    {text:'→ Sub-dissociative KETAMINE (adjunct, no sedation): 0.1–0.3 mg/kg IV = 7–20 mg over 15 min. Excellent opioid-sparing analgesic.'},
+    {text:'PROCEDURAL (reduction / repair) — needs sedation + analgesia:',drug:true},
+    {text:'→ KETAMINE 1–2 mg/kg IV (65–130 mg, 65 kg) + Midazolam 0.05 mg/kg IV (anti-emergence). Procedural depth in 2–3 min. BEST OPTION for ER.'},
+    {text:'→ Propofol-based: Fentanyl 1 mcg/kg IV → Propofol 0.5 mg/kg titrated (stable patients only, anesthetist ideally present).'},
+    {text:'BURNS SPECIAL: Morphine/Fentanyl IV for acute phase. Ketamine 1.5 mg/kg IV for dressing changes. Consider ketamine infusion 0.15 mg/kg/hr for ongoing analgesia.'},
+    {text:'POST-PROCEDURE: Ketorolac 30 mg q6h + Paracetamol 1g q8h scheduled. Opioids prn for breakthrough (NRS >6).'},
+  ],
+  pearls:['Multi-modal analgesia: combine agents from different classes → reduces doses and side effects','Oligoanalgesia (undertreating pain) worsens outcomes, delays recovery, increases PTSD','Ketamine + Midazolam = safest ER procedural sedation combo — preserves airway reflexes','Document NRS before AND after every intervention for medico-legal and quality care purposes']
+},
+{
+  id:'seizure', common:true,
+  title:'⚡ STATUS EPILEPTICUS',
+  subtitle:'Seizure >5 minutes or repeated seizures without recovery',
+  steps:[
+    {text:'AIRWAY + SAFETY: Position lateral, suction, O2 NRM 10 L/min. IV access × 2. Finger BGL — if <60 mg/dL: D50 50 mL IV. Continuous SpO2, cardiac monitor.'},
+    {text:'FIRST LINE (0–5 min):',drug:true},
+    {text:'→ Diazepam 10 mg IV over 2 min (adult). OR 0.3 mg/kg IV (peds). NO IV: Diazepam PR 0.5 mg/kg (peds); Midazolam 10 mg IM/IN (adult).'},
+    {text:'IF SEIZURE CONTINUES AT 5 MIN: REPEAT Diazepam 10 mg IV. OR switch to Midazolam 5 mg IV.'},
+    {text:'SECOND LINE (10–20 min):',drug:true},
+    {text:'→ Phenytoin 20 mg/kg IV at ≤50 mg/min (max 1.5g). Monitor BP + ECG. OR Phenobarbital 20 mg/kg IV at 60 mg/min. OR Valproate 25–45 mg/kg IV.'},
+    {text:'REFRACTORY STATUS (>30 min uncontrolled) — EMERGENCY:',drug:true},
+    {text:'→ INTUBATE + General anesthesia: Propofol 2 mg/kg induction → 5–10 mg/kg/hr infusion. OR Midazolam infusion 0.1–2 mg/kg/hr IV. Continuous EEG if available. ICU transfer.'},
+    {text:'WORKUP: ABG, glucose, electrolytes (Na, Ca, Mg), CT brain, LP if infection suspected, tox screen, AED levels.'},
+  ],
+  pearls:['Diazepam IV = first line in Indonesian ER — cheap, widely available, effective','Respiratory support ready BEFORE giving benzos — have BVM and suction ready','Do NOT give >2 benzo doses before escalating to phenytoin — stacking causes severe respiratory depression','Refractory status = immediate intubation + ICU consultation — call early']
+},
+{
+  id:'hemorrhage', common:true,
+  title:'🩸 MASSIVE HEMORRHAGE / TRAUMA HEMORRHAGE',
+  subtitle:'Life-threatening bleeding — trauma, PPH, major vessel injury',
+  steps:[
+    {text:'IMMEDIATE (0–5 min): Direct pressure / tourniquet for extremity. Establish large-bore IV × 2 (14–16G antecubital). Warm IV fluids (or blood) — avoid cold saline. Type and crossmatch + FBC + coagulation.'},
+    {text:'TXA — GIVE IMMEDIATELY:',drug:true},
+    {text:'→ Tranexamic Acid 1 g IV over 10 min. Then 1 g IV over 8 hours. MUST GIVE WITHIN 3 HOURS of injury onset (ideally <1hr). Do not wait for lab results.'},
+    {text:'BLOOD PRODUCTS — ACTIVATE MTP (Massive Transfusion Protocol) early:',drug:true},
+    {text:'→ pRBC : FFP : Platelets = 1:1:1 ratio. 4 units pRBC + 4 units FFP + 1 apheresis platelet (adult). Accept permissive hypotension SBP 80–90 mmHg until hemorrhage controlled surgically.'},
+    {text:'CHECK FIBRINOGEN — if <1.5 g/L:',drug:true},
+    {text:'→ Cryoprecipitate 1 unit per 5 kg = 10–12 units (adult). Target fibrinogen >1.5 g/L (>2 g/L in PPH). AND/OR Fibrinogen concentrate 2–4 g IV if available.'},
+    {text:'CALCIUM REPLACEMENT (massive transfusion chelates ionized calcium):'},
+    {text:'→ CaCl2 1 g IV (or calcium gluconate 3 g IV) per 4 units pRBC. Repeat q4–6 units or per ionized Ca2+ level.'},
+    {text:'SURGICAL/PROCEDURAL HEMORRHAGE CONTROL: Tamponade, packing, embolization, surgery. Permissive hypotension until definitive control.'},
+    {text:'MONITOR: Hemoglobin q30–60 min, coagulation (PT/aPTT/fibrinogen), lactate, ionized Ca2+, temperature (hypothermia worsens coagulopathy).'},
+  ],
+  pearls:['TRIAD OF DEATH: Hypothermia + Acidosis + Coagulopathy — PREVENT all three simultaneously','TXA timing is CRITICAL — give in ambulance or at ER door, not after imaging','1:1:1 ratio MTP is evidence-based (PROPPR trial) — do NOT give only crystalloids','Permissive hypotension: SBP 80–90 acceptable in trauma until surgical control (not in TBI)']
+},
+// ─── RARE ────────────────────────────────────────────────────────
+{
+  id:'anaphylaxis', common:false,
+  title:'🔴 ANAPHYLAXIS',
+  subtitle:'Rare but life-threatening IgE-mediated systemic reaction',
+  steps:[
+    {text:'DIAGNOSE: Two+ systems involved: skin (urticaria, angioedema), respiratory (stridor, wheeze, hypoxia), CV (hypotension, tachycardia), GI (nausea, vomiting). After exposure to allergen.'},
+    {text:'EPINEPHRINE — FIRST LINE, IMMEDIATELY:',drug:true},
+    {text:'→ Epinephrine 0.3–0.5 mg IM (anterolateral thigh) — adult. 0.01 mg/kg IM — peds (max 0.5 mg). Repeat q5–15 min prn.'},
+    {text:'POSITION: Supine + legs elevated (unless vomiting/respiratory distress). Do NOT sit patient up.'},
+    {text:'AIRWAY: High-flow O2. If angioedema → intubate EARLY before airway closes. Surgical airway if rapid swelling occludes.'},
+    {text:'IV FLUIDS: 1–2 L NS bolus rapidly if hypotensive.'},
+    {text:'SECOND LINE (AFTER epinephrine):'},
+    {text:'→ Diphenhydramine 25–50 mg IV (antihistamine H1). Ranitidine 50 mg IV (H2). Methylprednisolone 1–2 mg/kg IV (prevents biphasic).'},
+    {text:'→ Salbutamol nebulized if bronchospasm persists.'},
+    {text:'REFRACTORY ANAPHYLAXIS (epinephrine-resistant):',drug:true},
+    {text:'→ Epinephrine IV infusion 0.1–1 mcg/kg/min. Glucagon 1–5 mg IV (if on beta-blocker). Vasopressor (norepinephrine) if shock persists.'},
+    {text:'OBSERVE: At least 4–6 hours after resolution (biphasic reaction risk 4–12hr later). Admit if severe.'},
+  ],
+  pearls:['EPINEPHRINE is the ONLY first-line drug — antihistamines/steroids are adjuncts, never primary','IM thigh > IM deltoid > SC — IM thigh gives fastest, highest peak serum level','Biphasic reaction in 5–20% — observe minimum 4–6hr post-resolution','If on beta-blocker: epinephrine may be less effective → glucagon 1–5 mg IV']
+},
+{
+  id:'mh', common:false,
+  title:'🔥 MALIGNANT HYPERTHERMIA (MH)',
+  subtitle:'Rare but potentially fatal — triggered by succinylcholine or volatile anesthetics',
+  steps:[
+    {text:'SUSPECT MH: In any patient exposed to succinylcholine or volatile anesthetic (halothane, sevoflurane, isoflurane) who develops: unexplained rising EtCO2, rigidity (especially masseter after sux), rapidly rising temperature, tachycardia, metabolic acidosis.'},
+    {text:'CALL FOR HELP IMMEDIATELY. This is a life-threatening emergency.'},
+    {text:'STOP TRIGGER: Stop succinylcholine or volatile anesthetic immediately. Switch to TIVA (propofol/ketamine). Change soda lime canister. Maximum O2 flow.'},
+    {text:'DANTROLENE — ADMINISTER IMMEDIATELY:',drug:true},
+    {text:'→ Dantrolene 2.5 mg/kg IV rapid bolus. Repeat q5 min until rigidity resolves and EtCO2 normalizes. Total up to 10 mg/kg or more.'},
+    {text:'COOLING: Ice packs (axilla, groin, neck). Cold IV saline 1–2 L. Remove warming blankets. Target temp <38.5°C.'},
+    {text:'CORRECT ACIDOSIS: NaHCO3 1–2 mEq/kg IV if pH <7.2.'},
+    {text:'TREAT HYPERKALEMIA: CaCl2 1 g IV + sodium bicarbonate + glucose/insulin if K+ >6.'},
+    {text:'TREAT ARRHYTHMIAS: Amiodarone 300 mg IV (NOT calcium channel blockers or beta-blockers — worsen MH).'},
+    {text:'MONITOR: Rectal temperature q5 min, EtCO2, ABG q15 min, K+, CK (rhabdomyolysis), urine myoglobin. ICU admission.'},
+  ],
+  pearls:['MH can occur even in previously uncomplicated anesthesia','Dantrolene acts within minutes — stock it in any hospital using succinylcholine/volatile agents','Mortality without dantrolene: ~80%. With dantrolene: <10%','Call MH hotline (USA: 1-800-MH-HYPER) — 24/7 expert guidance available internationally','Recurrence can occur — continue dantrolene 1 mg/kg q6h × 24hr after initial stabilization']
+},
+{
+  id:'serotonin', common:false,
+  title:'⚡ SEROTONIN SYNDROME',
+  subtitle:'Rare — serotonergic drug toxicity, often from combinations',
+  steps:[
+    {text:'HUNTER TRIAD — diagnose if any: (1) Clonus (spontaneous, inducible, or ocular) + (2) Agitation/tremor + (3) Diaphoresis/hyperthermia. History of serotonergic medications.'},
+    {text:'COMMON CULPRITS: SSRIs, SNRIs, tramadol, linezolid, ondansetron (paradoxically), MAOIs, triptans, fentanyl (some), dextromethorphan — especially COMBINATIONS.'},
+    {text:'MILD (alert, mild tremor/tachycardia/clonus): Remove offending agent + Cyproheptadine 4–8 mg PO. Monitor.'},
+    {text:'MODERATE (marked agitation, hyperthermia <41°C, continuous clonus):',drug:true},
+    {text:'→ Benzodiazepines: Diazepam 5–10 mg IV OR Lorazepam 1–2 mg IV — titrated for agitation and muscle activity (reduces rigidity AND heat production).'},
+    {text:'→ Cyproheptadine 12–32 mg/day in divided doses PO (5-HT2A antagonist).'},
+    {text:'→ Active cooling: Ice packs, cooling blankets if temp >39°C.'},
+    {text:'SEVERE (hyperthermia >41°C, rigidity, rhabdomyolysis, seizures, hemodynamic instability):',drug:true},
+    {text:'→ INTUBATE + Sedation with propofol or benzodiazepine infusion. Paralysis with NON-DEPOLARIZING NMB (rocuronium 1.2 mg/kg) — do NOT use succinylcholine (hyperkalemia from rhabdomyolysis).'},
+    {text:'→ Aggressive active cooling. IV fluids for rhabdomyolysis protection (target urine output >1 mL/kg/hr).'},
+    {text:'→ Cyproheptadine via NGT if intubated.'},
+    {text:'AVOID: Bromocriptine, dantrolene (ineffective), succinylcholine (MH confusion — succinylcholine should not be used in established rhabdomyolysis).'},
+  ],
+  pearls:['Distinguish from NMS (neuroleptic malignant syndrome): NMS = bradykinesia/lead-pipe rigidity + antipsychotic exposure; SS = hyperkinesia/clonus + serotonergic drug','Onset FAST (hours) vs. NMS (days)','Benzodiazepines are the most effective agents — reduce muscle tone = reduce heat production','Most cases resolve within 24hr of stopping offending agent']
+},
+{
+  id:'localanesthetic', common:false,
+  title:'💉 LOCAL ANESTHETIC SYSTEMIC TOXICITY (LAST)',
+  subtitle:'Rare but potentially fatal — from regional blocks or inadvertent IV injection',
+  steps:[
+    {text:'SUSPECT LAST: Any patient who received a local anesthetic (lidocaine, bupivacaine, ropivacaine) who develops CNS or cardiovascular symptoms within 60 min of injection. Can be delayed.'},
+    {text:'EARLY CNS symptoms: Perioral numbness, metallic taste, dizziness, tinnitus, agitation, confusion, slurred speech.'},
+    {text:'SEIZURES: Benzodiazepine first line — Midazolam 5 mg IV OR Diazepam 10 mg IV. Avoid propofol at large doses (can worsen CVS instability in bupivacaine toxicity).'},
+    {text:'CARDIOVASCULAR TOXICITY (arrhythmia, wide QRS, bradycardia, asystole — especially bupivacaine):',drug:true},
+    {text:'→ LIPID EMULSION THERAPY (Intralipid 20%) — IMMEDIATELY: Bolus 1.5 mL/kg IV over 1 min (= 100 mL, 70 kg). Then infusion 0.25 mL/kg/min = 18 mL/min. Repeat bolus q5 min if CVS unstable (max 3 boluses). Max cumulative dose 12 mL/kg.'},
+    {text:'CARDIAC ARREST from LAST: ADVANCED CPR + Lipid emulsion. Adrenaline in SMALL doses (≤1 mcg/kg — large doses worsen). AVOID vasopressin, calcium channel blockers, beta-blockers.'},
+    {text:'Continue lipid emulsion until hemodynamic stability maintained ≥5 min.'},
+    {text:'CALL ANESTHESIA/INTENSIVIST IMMEDIATELY for ECMO consideration in refractory cases (bupivacaine cardiac arrest).'},
+  ],
+  pearls:['Bupivacaine is the most cardiotoxic LA — wide QRS ventricular arrhythmia is classic','Lipid emulsion is the specific treatment — have Intralipid 20% stocked wherever regional anesthesia is done','Propofol is NOT a substitute for lipid emulsion — it contains lipid but concentration too low','Log on to lipidrescue.org for real-time dosing guidance']
+},
+{
+  id:'hyperkalemia', common:false,
+  title:'⚡ SEVERE HYPERKALEMIA (K+ >6.5 mEq/L + ECG changes)',
+  subtitle:'Rare but immediately life-threatening cardiac emergency',
+  steps:[
+    {text:'DIAGNOSE: ECG changes are KEY — peaked T waves → wide QRS → sine wave → VF. K+ >6.5 or any K+ with ECG changes requires immediate treatment.'},
+    {text:'CARDIAC MEMBRANE STABILIZATION — FIRST (within 5 min):',drug:true},
+    {text:'→ Calcium Chloride 1 g IV (10 mL of 10%) over 5–10 min. OR Calcium Gluconate 3 g IV over 10 min. Onset: 1–3 min. Does NOT lower K+, just stabilizes cardiac membrane. Repeat if no ECG improvement in 5 min.'},
+    {text:'SHIFT K+ INTO CELLS:',drug:true},
+    {text:'→ Insulin + Dextrose: Regular insulin 10 units IV + D50 50 mL IV (or D10 500 mL). Onset 20–30 min. Monitor BGL q1h.'},
+    {text:'→ Salbutamol (Albuterol) 10–20 mg nebulized (3–4× standard dose). Onset 20–30 min. Additive with insulin.'},
+    {text:'→ NaHCO3 50–100 mEq IV: Only effective in metabolic acidosis; controversial in normal pH.'},
+    {text:'REMOVE K+ FROM BODY:',drug:true},
+    {text:'→ DIALYSIS: Most effective. Emergency dialysis if refractory or severe renal failure.'},
+    {text:'→ Furosemide 40–80 mg IV if not oliguric.'},
+    {text:'→ Calcium Resonium (K+ exchange resin) 15–30 g PO/PR — slower effect (hours), not for acute emergency.'},
+    {text:'AVOID SUCCINYLCHOLINE for intubation — raises K+ by 0.5–1 mEq/L. Use ROCURONIUM 1.2 mg/kg.'},
+    {text:'MONITOR: ECG continuous, K+ q1–2hr, glucose if insulin given, urine output.'},
+  ],
+  pearls:['ECG changes matter more than absolute K+ value — ECG abnormality = emergency regardless of exact level','Calcium is the ONLY drug that protects the heart immediately — give first','Insulin + dextrose + salbutamol triple combination lowers K+ fastest non-dialysis approach','NEVER use succinylcholine for RSI in hyperkalemia — rocuronium is the safe alternative']
+},
+];
+
+// ================================================================
+// STATE
+// ================================================================
+let curCat = 'all';
+let curDrug = null;
+let curScene = null;
+let curPanel = 'welcome';
+
+// ================================================================
+// CATEGORY CONFIG
+// ================================================================
+const CATS = [
+  {id:'all',    label:'ALL DRUGS'},
+  {id:'sedative',label:'SEDATIVES',dotCls:'dot-sed'},
+  {id:'analgesic',label:'ANALGESICS',dotCls:'dot-analg'},
+  {id:'nmd',    label:'NMB',dotCls:'dot-nmd'},
+  {id:'hemostatic',label:'HEMOSTATICS',dotCls:'dot-hemo'},
+  {id:'antidote',label:'ANTIDOTES',dotCls:'dot-anti'},
+  {id:'scenario',label:'SCENARIOS',dotCls:'dot-scen'},
+  {id:'calculator',label:'⚖ DOSE CALC'},
+];
+
+// ================================================================
+// INIT
+// ================================================================
+function init() {
+  // Cat tabs
+  const tabs = document.getElementById('catTabs');
+  CATS.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-tab';
+    btn.dataset.cat = c.id;
+    btn.textContent = c.label;
+    btn.onclick = () => selectCat(c.id);
+    tabs.appendChild(btn);
+  });
+  tabs.querySelector('[data-cat="all"]').classList.add('active');
+  renderSidebar();
+  renderWelcome();
+}
+
+function selectCat(id) {
+  curCat = id;
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.cat-tab[data-cat="${id}"]`).classList.add('active');
+  curDrug = null; curScene = null;
+  renderSidebar();
+  if (id === 'calculator') { showCalc(); return; }
+  if (id === 'scenario') { showWelcome(); return; }
+  showWelcome();
+}
+
+// ================================================================
+// SIDEBAR
+// ================================================================
+function dotCls(cat) {
+  const map = {sedative:'dot-sed',analgesic:'dot-analg',nmd:'dot-nmd',hemostatic:'dot-hemo',antidote:'dot-anti'};
+  return map[cat]||'dot-sed';
+}
+
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  sb.innerHTML = '';
+
+  if (curCat === 'calculator') return;
+
+  if (curCat === 'scenario') {
+    const grps = [{label:'● COMMON SCENARIOS', common:true},{label:'◦ RARE / SPECIFIC', common:false}];
+    grps.forEach(g => {
+      const filtered = SCENARIOS.filter(s=>s.common===g.common && (q===''||s.title.toLowerCase().includes(q)||s.subtitle.toLowerCase().includes(q)));
+      if (!filtered.length) return;
+      const lbl = document.createElement('div');
+      lbl.className='sidebar-group-label';
+      lbl.textContent=g.label;
+      sb.appendChild(lbl);
+      filtered.forEach(s=>{
+        const el = document.createElement('div');
+        el.className=`sidebar-item${curScene===s.id?' active':''}`;
+        el.onclick=()=>showScenario(s.id);
+        el.innerHTML=`<div class="si-dot dot-scen"></div><div><div class="si-name" style="font-size:11px">${s.title}</div><div class="si-class">${s.subtitle.substring(0,40)}…</div></div>`;
+        sb.appendChild(el);
+      });
+    });
+    return;
+  }
+
+  const catGroups = ['sedative','analgesic','nmd','hemostatic','antidote'];
+  catGroups.forEach(cat=>{
+    if (curCat !== 'all' && curCat !== cat) return;
+    const filtered = DRUGS.filter(d=>d.cat===cat&&(q===''||d.name.toLowerCase().includes(q)||d.class.toLowerCase().includes(q)));
+    if (!filtered.length) return;
+    const labels = {sedative:'SEDATIVES / INDUCTION',analgesic:'ANALGESICS',nmd:'NEUROMUSCULAR BLOCKERS',hemostatic:'HEMOSTATICS',antidote:'ANTIDOTES'};
+    const lbl = document.createElement('div');
+    lbl.className='sidebar-group-label';
+    lbl.textContent=labels[cat]||cat.toUpperCase();
+    sb.appendChild(lbl);
+    filtered.forEach(d=>{
+      const el=document.createElement('div');
+      el.className=`sidebar-item${curDrug===d.id?' active':''}`;
+      el.onclick=()=>showDrug(d.id);
+      el.innerHTML=`<div class="si-dot ${dotCls(d.cat)}"></div><div><div class="si-name">${d.name}</div><div class="si-class">${d.class}</div></div>`;
+      sb.appendChild(el);
+    });
+  });
+}
+
+// ================================================================
+// PANELS
+// ================================================================
+function switchPanel(name) {
+  ['welcomePanel','drugPanel','scenarioPanel','calcPanel'].forEach(p=>document.getElementById(p).classList.add('hidden'));
+  document.getElementById(name+'Panel').classList.remove('hidden');
+  curPanel = name;
+  document.getElementById('mainContent').scrollTop = 0;
+}
+
+function showWelcome() { switchPanel('welcome'); renderWelcome(); }
+
+function renderWelcome() {
+  const p = document.getElementById('welcomePanel');
+  p.innerHTML = `<div class="welcome">
+    <div class="welcome-icon">💉</div>
+    <h2>ER RX INDONESIA</h2>
+    <p>Select a drug or scenario from the sidebar, or use the category tabs above. Use ⚖ DOSE CALC to calculate weight-based doses.</p>
+    <div class="welcome-grid">
+      <div class="welcome-card" onclick="selectCat('sedative')"><div class="wc-icon">😴</div><div class="wc-label">SEDATIVES</div><div class="wc-sub">5 drugs</div></div>
+      <div class="welcome-card" onclick="selectCat('analgesic')"><div class="wc-icon">💊</div><div class="wc-label">ANALGESICS</div><div class="wc-sub">4 drugs</div></div>
+      <div class="welcome-card" onclick="selectCat('nmd')"><div class="wc-icon">⚡</div><div class="wc-label">NMBs</div><div class="wc-sub">2 drugs</div></div>
+      <div class="welcome-card" onclick="selectCat('hemostatic')"><div class="wc-icon">🩸</div><div class="wc-label">HEMOSTATICS</div><div class="wc-sub">4 agents</div></div>
+      <div class="welcome-card" onclick="selectCat('antidote')"><div class="wc-icon">🧪</div><div class="wc-label">ANTIDOTES</div><div class="wc-sub">3 drugs</div></div>
+      <div class="welcome-card" onclick="selectCat('scenario')"><div class="wc-icon">📋</div><div class="wc-label">SCENARIOS</div><div class="wc-sub">${SCENARIOS.length} cases</div></div>
+      <div class="welcome-card" onclick="selectCat('calculator')"><div class="wc-icon">⚖</div><div class="wc-label">DOSE CALC</div><div class="wc-sub">All drugs</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--text-dim);margin-top:12px;font-family:var(--mono)">⚠ For licensed medical personnel only. Verify doses with local formulary.</p>
+  </div>`;
+}
+
+// ================================================================
+// DRUG DETAIL
+// ================================================================
+function badgeClass(cat) { return {sedative:'badge-sed',analgesic:'badge-analg',nmd:'badge-nmd',hemostatic:'badge-hemo',antidote:'badge-anti'}[cat]||'badge-sed'; }
+function catLabel(cat) { return {sedative:'SEDATIVE / INDUCTION',analgesic:'ANALGESIC',nmd:'NEUROMUSCULAR BLOCKER',hemostatic:'HEMOSTATIC',antidote:'ANTIDOTE'}[cat]||cat.toUpperCase(); }
+
+function showDrug(id) {
+  curDrug = id; curScene = null;
+  renderSidebar();
+  closeSidebar();
+  const d = DRUGS.find(x=>x.id===id);
+  if (!d) return;
+  const panel = document.getElementById('drugPanel');
+  const routes = d.routes.map(r=>`<span class="badge badge-route">${r}</span>`).join(' ');
+
+  panel.innerHTML = `
+  <div class="drug-header">
+    <div>
+      <div class="drug-name-big">${d.name.toUpperCase()}</div>
+      <div class="drug-meta">
+        <div><span class="badge ${badgeClass(d.cat)}">${catLabel(d.cat)}</span></div>
+        <div style="color:var(--text-muted);font-family:var(--mono);font-size:11px;margin-top:3px">${d.class}</div>
+        <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${routes}</div>
+        <div style="margin-top:5px"><span class="badge badge-avail">📦 ${d.avail}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="sections">
+    ${makeSection('⚙️','MECHANISM',`<p style="font-size:13px;line-height:1.7">${d.mech}</p>`,false)}
+    <div class="two-col">
+      ${makeSection('✅','INDICATIONS',`<ul class="info-list">${d.indications.map(i=>`<li class="li-green">${i}</li>`).join('')}</ul>`,false)}
+      ${makeSection('🚫','CONTRAINDICATIONS',`<ul class="info-list">${d.contraindications.map(i=>`<li class="li-red">${i}</li>`).join('')}</ul>`,false)}
+    </div>
+    ${makeSection('💡','PEARLS & PITFALLS',`<ul class="info-list">${d.pearls.map(p=>`<li class="${p.startsWith('✅')?'li-blue':'li-yellow'}">${p}</li>`).join('')}</ul>`,false)}
+    ${makeSection('💊','DOSING BY POPULATION',`<div class="dose-wrap"><table class="dose-table">
+      <thead><tr><th>POPULATION</th><th>INDICATION</th><th>DOSE</th><th>TITRATION</th><th>NOTES</th></tr></thead>
+      <tbody>${d.doses.map(r=>`<tr><td class="dose-pop">${r.pop}</td><td style="color:var(--text-muted)">${r.ind}</td><td class="dose-val">${r.dose}</td><td style="color:var(--accent3);font-size:11px">${r.titrate}</td><td class="dose-note">${r.note}</td></tr>`).join('')}</tbody>
+    </table></div>`,false)}
+    ${makeSection('📈','TITRATION GUIDANCE',`<div class="titrate-box">${d.titrate}</div>`,false)}
+    ${makeSection('📊','MONITORING',`<div class="monitor-grid">${d.monitoring.map(m=>`<div class="monitor-card"><div class="monitor-label">${m.l}</div><div class="monitor-target">${m.t}</div><div class="monitor-note">${m.n}</div></div>`).join('')}</div>`,false)}
+    ${makeSection('☠️','OVERDOSE & MANAGEMENT',`
+      <div class="overdose-box"><h4>⚠ SIGNS OF OVERDOSE / TOXICITY</h4><ul class="info-list">${d.overdose.signs.map(s=>`<li class="li-red">${s}</li>`).join('')}</ul></div>
+      <div style="margin-top:10px"><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-bottom:6px">MANAGEMENT</div><ul class="info-list">${d.overdose.mgmt.map(m=>`<li class="li-yellow">${m}</li>`).join('')}</ul></div>
+      <div class="antidote-box"><div class="at-label">🧪 ANTIDOTE / REVERSAL AGENT</div>${d.overdose.antidote}</div>
+    `,false)}
+  </div>`;
+  switchPanel('drug');
+}
+
+function makeSection(icon, title, body, collapsed=false) {
+  return `<div class="section${collapsed?' collapsed':''}">
+    <div class="section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+      <span class="section-icon">${icon}</span> ${title}
+      <span class="section-toggle">▾</span>
+    </div>
+    <div class="section-body">${body}</div>
+  </div>`;
+}
+
+// ================================================================
+// SCENARIO
+// ================================================================
+function showScenario(id) {
+  curScene = id; curDrug = null;
+  renderSidebar();
+  closeSidebar();
+  const s = SCENARIOS.find(x=>x.id===id);
+  if (!s) return;
+  const panel = document.getElementById('scenarioPanel');
+  panel.innerHTML = `
+  <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+    <div class="scen-title">${s.title}</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:5px">${s.subtitle}</div>
+    <div style="margin-top:8px"><span class="badge" style="background:rgba(155,114,207,0.15);border:1px solid rgba(155,114,207,0.4);color:var(--purple)">${s.common?'● COMMON':'◦ RARE / SPECIFIC'}</span></div>
+  </div>
+  <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-bottom:8px">STEP-BY-STEP MANAGEMENT</div>
+  <div class="section" style="margin-bottom:16px">
+    <div class="section-body">
+      ${s.steps.map((st,i)=>`<div class="step"><div class="step-num${st.drug?' drug':''}">${i+1}</div><div class="step-content" style="${st.drug?'color:var(--yellow);font-weight:600':'color:var(--text)'}">${st.text}</div></div>`).join('')}
+    </div>
+  </div>
+  <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-bottom:8px">CLINICAL PEARLS</div>
+  <ul class="info-list" style="margin-bottom:16px">
+    ${s.pearls.map(p=>`<li class="li-purple">${p}</li>`).join('')}
+  </ul>
+  <div class="alert alert-warn">⚠ This is a clinical reference tool. Always follow your institution's protocols and use clinical judgment. Consult specialists early in complex cases.</div>`;
+  switchPanel('scenario');
+}
+
+// ================================================================
+// CALCULATOR
+// ================================================================
+function showCalc() {
+  switchPanel('calc');
+  renderCalcUI();
+}
+
+function renderCalcUI() {
+  const panel = document.getElementById('calcPanel');
+  const drugOptions = DRUGS.map(d=>`<option value="${d.id}">${d.name} (${d.class.split('—')[0].trim()})</option>`).join('');
+  panel.innerHTML = `
+  <div class="calc-wrap">
+    <div class="calc-header">DOSE CALCULATOR</div>
+    <div class="calc-sub">Weight-based dosing for ER drugs. Enter patient details to calculate doses.</div>
+    <div class="calc-inputs">
+      <div class="calc-field">
+        <label>WEIGHT (KG)</label>
+        <input type="number" id="calcWeight" placeholder="e.g. 65" min="1" max="200" value="">
+      </div>
+      <div class="calc-field">
+        <label>AGE (YEARS)</label>
+        <input type="number" id="calcAge" placeholder="e.g. 35" min="0" max="120" value="">
+      </div>
+      <div class="calc-field">
+        <label>DRUG CATEGORY</label>
+        <select id="calcCat" onchange="renderCalcResults()">
+          <option value="all">ALL DRUGS</option>
+          <option value="sedative">Sedatives</option>
+          <option value="analgesic">Analgesics</option>
+          <option value="nmd">NM Blockers</option>
+          <option value="hemostatic">Hemostatics</option>
+          <option value="antidote">Antidotes</option>
+        </select>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="renderCalcResults()">⚖ CALCULATE DOSES</button>
+    <div class="calc-results" id="calcResults" style="margin-top:18px"></div>
+  </div>`;
+}
+
+function renderCalcResults() {
+  const wInput = document.getElementById('calcWeight');
+  const aInput = document.getElementById('calcAge');
+  const catSel = document.getElementById('calcCat');
+  const w = parseFloat(wInput.value);
+  const age = parseFloat(aInput.value)||null;
+  const cat = catSel.value;
+  const container = document.getElementById('calcResults');
+
+  if (!w || w<1 || w>300) {
+    container.innerHTML = `<div class="alert alert-warn">⚠ Please enter a valid weight (1–300 kg) to calculate doses.</div>`;
+    return;
+  }
+
+  const drugs = DRUGS.filter(d=>cat==='all'||d.cat===cat).filter(d=>d.calcDoses&&d.calcDoses.length>0);
+
+  if (!drugs.length) { container.innerHTML='<div class="alert alert-info">No drugs with calculator data for this category.</div>'; return; }
+
+  // Age-based notes
+  let ageNote = '';
+  if (age !== null) {
+    if (age < 1) ageNote = '⚠ INFANT (<1yr): Use higher mg/kg doses for succinylcholine/ketamine. Consult peds dosing. Atropine pre-treatment for bradycardia.';
+    else if (age < 12) ageNote = '⚠ CHILD: Succinylcholine 2 mg/kg (not 1.5). Ketamine IM 4–5 mg/kg preferred. Higher propofol induction doses.';
+    else if (age > 65) ageNote = '⚠ ELDERLY (>65yr): Reduce all sedative/opioid doses by 30–50%. Hypotension risk with propofol. Benzodiazepines cause prolonged sedation.';
+    else if (age >= 12 && age < 18) ageNote = 'ADOLESCENT: Use weight-based adult dosing. Tramadol not recommended <12yr.';
+  }
+
+  let html = '';
+  if (ageNote) html += `<div class="alert alert-warn">${ageNote}</div>`;
+
+  const patientInfo = `<div style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-bottom:14px;padding:10px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+    PATIENT: <span style="color:var(--yellow)">${w} kg</span> ${age?`| AGE: <span style="color:var(--accent3)">${age} yr</span>`:''}
+    ${age&&age<18?` | <span style="color:var(--accent2)">PEDIATRIC</span>`:''}
+    ${age&&age>65?` | <span style="color:var(--accent2)">ELDERLY</span>`:''}
+  </div>`;
+  html += patientInfo;
+
+  drugs.forEach(d => {
+    const rows = d.calcDoses.map(cd=>{
+      const result = cd.formula(w, age);
+      const flag = cd.flag ? cd.flag(w, age) : null;
+      const doseStr = result.low===result.high ? `${result.low} ${result.unit}` : `${result.low}–${result.high} ${result.unit}`;
+      return `<div class="cdc-row">
+        <div class="cdc-ind">${cd.ind}</div>
+        <div>
+          <div class="cdc-dose">${doseStr}</div>
+          ${result.note?`<div class="cdc-note">${result.note}</div>`:''}
+          ${flag?`<div class="cdc-warn">${flag}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    html += `<div class="calc-drug-card">
+      <div class="cdc-header">
+        <div class="si-dot ${dotCls(d.cat)}"></div>
+        <div>
+          <div class="cdc-name">${d.name}</div>
+          <div class="cdc-class">${d.class}</div>
+        </div>
+      </div>
+      <div class="cdc-body">${rows}</div>
+    </div>`;
+  });
+
+  html += `<div class="alert alert-warn" style="margin-top:4px">⚠ Calculated doses are guidelines. Adjust for clinical context, renal/hepatic impairment, and comorbidities. Always verify with institutional formulary.</div>`;
+  container.innerHTML = html;
+}
+
+// ================================================================
+// MOBILE SIDEBAR
+// ================================================================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('active');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('active');
+}
+
+// ================================================================
+// START
+// ================================================================
+init();
+</script>
+</body>
+</html>
